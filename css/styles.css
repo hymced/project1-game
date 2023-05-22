@@ -1,0 +1,47 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+#board {
+    background-color: black;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.lemming {
+    background-color: rgb(0, 178, 0);
+    position: absolute;
+}
+
+.hardcoded {
+    left: 0%;
+    width: 2%; 
+    /* 
+    1080 = 2*2*2*5*27 ; 1/2/2/2/5 = 0.025 ; min precise %
+    2% * 1080 = 21.6 
+    but getBoundingClientRect() returns 21.59375 
+    and clientWidth returns 22 
+    and window.getComputedStyle() returns 21.5938px 
+    (chatGPT says because of browser subpixel rendering...) 
+    */
+    height: 2%;
+    background-color: red;
+    position: absolute
+}
+
+.blocker {
+    background-color: rgb(65,65,227);
+    position: absolute;
+}
+
+.floor {
+    background-color: rgb(243, 243, 87);
+    position: absolute;
+}
+
+.ground {
+    background-color: rgb(243, 243, 87);
+    position: absolute;
+}
