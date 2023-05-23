@@ -393,18 +393,45 @@ class Game {
     
     attachEventListeners() {
         // listen for click to select lemming so the player can trigger a skill
+        // not based on event bubbling to get the div container if img is cliked (which requires to register multiple event listener)
         document.addEventListener("click", eventClick => {
-            const lemming = game.lemmingsArr.filter(lemming => lemming.id === Number(eventClick.target.id))[0]
-            if (lemming.state === 'walk') {
-                clearInterval(lemming.intervalId)
-                lemming.intervalId = 0
-                lemming.block()
-            } else if (lemming.state === 'block') {
-                clearInterval(lemming.intervalId)
-                lemming.intervalId = 0
-                lemming.bomb()
-            }
+            // console.log(eventClick.currentTarget); // document
+            // console.log(eventClick.target); // div or img
+            
+            // if (eventClick.currentTarget.tagName === "div")
+            //     const elementDiv = eventClick.currentTarget // not valid: 'const' declarations can only be declared inside a block
+            // else if (eventClick.currentTarget.tagName === "img")
+            //     const elementDiv = eventClick.currentTarget.parentNode // not valid: 'const' declarations can only be declared inside a block
+            
+            // if (eventClick.currentTarget.tagName === "div") {
+            //     const elementDiv = eventClick.currentTarget
+            // } else if (eventClick.currentTarget.tagName === "img") {
+            //     const elementDiv = eventClick.currentTarget.parentNode
+            // }
+            
+            console.log(eventClick.target.tagName);
+            console.log(eventClick.target);
+
+            let elementDiv = null
+            if (eventClick.target.tagName === "DIV") 
+                elementDiv = eventClick.target
+            else if (eventClick.target.tagName === "IMG")
+                elementDiv = eventClick.target.parentNode
+
+            if (elementDiv) {
+                const lemming = game.lemmingsArr.filter(lemming => lemming.id === Number(elementDiv.id))[0]
+                if (lemming.state === 'walk') {
+                    clearInterval(lemming.intervalId)
+                    lemming.intervalId = 0
+                    lemming.block()
+                } else if (lemming.state === 'block') {
+                    clearInterval(lemming.intervalId)
+                    lemming.intervalId = 0
+                    lemming.bomb()
+                }
+            } else console.log("lemming missed!")
         })
+        /* // player DISABLED FOR NOW
         if (this.player) {
             document.addEventListener("mousemove", eventMouseMove => {            
                 game.player.left = eventMouseMove.clientX - this.player.widthPx / 2
@@ -414,6 +441,7 @@ class Game {
                 game.player.domElement.style.top =  game.player.top + 'px'
             })
         }
+        */
     }
 }
 
@@ -522,17 +550,27 @@ class Floor {
     /******************/
 
     break(breakPosStart, breakPosEnd) {
-
-        const floorPart2 = game.createFloor()
-        game.floorsArr.push(floorPart2)
-        floorPart2.left = breakPosEnd
-        floorPart2.domElement.style.left = floorPart2.left + "%"
-        floorPart2.width = this.left + this.width - breakPosEnd
-        floorPart2.domElement.style.width = floorPart2.width + "%"
-
-        // floorPart1 (after floorPart2 because I need the dimensions in floorPart2, avoiding variables...)
-        this.width = breakPosStart - this.left
-        this.domElement.style.width = this.width + "%"
+        if(breakPosStart > this.left && breakPosEnd < this.left + this.width) { // floorPart2 needed
+            const floorPart2 = game.createFloor()
+            game.floorsArr.push(floorPart2)
+            floorPart2.left = breakPosEnd
+            floorPart2.domElement.style.left = floorPart2.left + "%"
+            floorPart2.width = this.left + this.width - breakPosEnd
+            floorPart2.domElement.style.width = floorPart2.width + "%"
+            // floorPart1 (after floorPart2 because I need the dimensions in floorPart2 before changing them below, avoiding new variables...)
+            this.width = breakPosStart - this.left
+            this.domElement.style.width = this.width + "%"
+        } else { // floorPart1 is enough (this logic to avoid having to implement a .remove() method for the Floor class)
+            if(breakPosStart < this.left) {
+                this.width -= breakPosEnd - this.left
+                this.domElement.style.width = this.width + "%"
+                this.left = breakPosEnd
+                this.domElement.style.left = this.left + "%"
+            } else if(breakPosEnd > this.left + this.width) {
+                this.width = breakPosStart - this.left
+                this.domElement.style.width = this.width + "%"
+            } 
+        }
     }
 
 }
@@ -663,6 +701,9 @@ class Lemming {
         lemmingDomElement.style.top = this.top + "%"
         lemmingDomElement.style.left = this.left + "%"
 
+        const urlImage = "./images/lemming gifs v1/lemming-walk-anim.gif"
+        lemmingDomElement.innerHTML = `<img src="${urlImage}" alt="lemming-walk-anim.gif">`;
+
         const boardDomElement = document.getElementById("board")
 
         return boardDomElement.appendChild(lemmingDomElement)
@@ -679,12 +720,17 @@ class Lemming {
     fall() {        
         this.state = 'fall'
         this.intervalId = setInterval(() => {
-        const below = this.willCollideFloor()
-        if (!below) {
+        const floorBelow = this.willCollideFloor()
+        const exitBelow = this.willReachExit()
+        if (!floorBelow) {
             this.top += 1 * game.speedFactor
             this.domElement.style.top = this.top + "%"
+            if (exitBelow) { // will walk towards it after reaching the floor
+                if (this.isRightOfExit())
+                    this.direction = 'left'
+                else this.direction = 'right'
+            }
         } else {
-            const floorBelow = below
             // this.top = round(
             //     floorBelow.domElement.offsetTop / game.boardDomElement.clientHeight * 100 - this.height, 
             //     1) // not precise enough because offsetTop is already a rounded value
@@ -750,6 +796,8 @@ class Lemming {
 
     block() {
         this.state = 'block'
+        const urlImage = "./images/lemming gifs v2/lemming-stop-anim.gif"
+        this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-stop-anim.gif">`;
         this.domElement.classList.replace('lemming', 'blocker')
         clearInterval(this.intervalId)
         this.intervalId = null
@@ -785,9 +833,7 @@ class Lemming {
     /* Lemming > methods > misc */
     /****************************/
 
-    remove() {
-        console.log(game);
-        
+    remove() {       
         game.lemmingsArr.filter(lemming => lemming.id === this.id)[0].domElement.remove()
         // game.lemmingsArr.splice(game.lemmingsArr.indexOf(game.lemmingsArr.filter(lemming => lemming.id === this.id)[0]), 1)
         game.lemmingsArr.splice(game.lemmingsArr.indexOf(this), 1) // directly...
@@ -886,6 +932,13 @@ class Lemming {
         } else return false
     }
 
+    willReachExit() {
+        if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height)) // lemming must be entirely within exit vertical bounderies
+            && (this.left + this.width) <= (game.exit.left + game.exit.width) && this.left >= game.exit.left // lemming must be entirely within exit horizontal bounderies
+        ) return true
+        else return false
+    }
+
     willExit() {
         if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height))) { // lemming must be entirely within exit vertical bounderies            
             if (this.direction === 'right') {
@@ -901,6 +954,10 @@ class Lemming {
             }
         }
         return false
+    }
+
+    isRightOfExit() {
+        return this.left + this.width / 2 > game.exit.left + game.exit.width / 2
     }
 
 }
