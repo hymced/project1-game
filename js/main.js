@@ -4,6 +4,10 @@
 /********/
 
 class Game {
+
+    // public class field initialized before constructor is called (available with this.name later on)
+    name = "Lemming clone"
+
     constructor() {
 
         /*********************/
@@ -22,14 +26,47 @@ class Game {
         /* Game > settings */
         /*******************/
 
-        this.lemmingsMax = 3
-        this.speedFactor = 1
+        this.lemmingsMax = 10
+        this.speedFactor = 0.5
 
     }
 
     /******************/
     /* Game > methods */
     /******************/
+
+    testParserCommentBlockCollapseExpand() {
+        /* 
+        // a
+        // b
+        // c
+        */
+
+        // abc
+        // abc
+        // abc
+
+        // 0;           // numeric literal: simplest valid statement but will make the comments after as a comment block that can be collapsed/expanded
+        // 0 + 0;       // operation: same
+        // let zero;    // declaration: simplest valid statement that will break comments into 2 blocks that can be collapsed/expanded (seems like the parser goes backwards for splitting comments)
+        /* */           // ok
+
+        // abc
+        // abc
+        // abc
+
+        /* 
+        // a
+        // b
+        // c
+        */
+
+        /* 
+        // a
+        // b
+        // c
+        */
+    }
 
     start() {
         this.boardDomElement = document.getElementById("board")
@@ -39,12 +76,305 @@ class Game {
         this.floorsArr.push(this.createFloor())
         this.attachEventListeners()
 
-        this.intervalId = setInterval(() => {
-            if (this.lemmingsArr.length < this.lemmingsMax)
-                this.lemmingsArr.push(this.spawnLemming())
-            else clearInterval(this.intervalId)
-        }, 1000)
+        // 
+        // EXAMPLE 1
+        // this.intervalId = setInterval(() => {
+        //     if (this.lemmingsArr.length < this.lemmingsMax)
+        //         this.lemmingsArr.push(this.spawnLemming())
+        //     else clearInterval(this.intervalId)
+        // }, 1000)
+        // requires another property to store the intervalId
+        // 
+        // EXAMPLE 2
+        // setInterval(() => {
+        //     if (this.lemmingsArr.length < this.lemmingsMax)
+        //         this.lemmingsArr.push(this.spawnLemming())
+        // }, 1000)
+        // or don't clear the interval, the callback function will continue to the called but will do nothing...
+        // this also makes closures that close over (hold/keep/retain) the variables returned by the properties of this
+
+        /* */
+        // # {START} NOTES: CLOSURES
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+        // # Lexical scoping
+        // Lexical scoping describes how a parser resolves variable names when functions are nested. 
+        // The word lexical refers to the fact that lexical scoping uses the location where a variable is declared within the source code to determine where that variable is available. 
+        // Nested functions have access to variables declared in their outer scope.
+        // In this case, the scope is called a function scope, because the variable is accessible and only accessible within the function body where it's declared.
+        // Traditionally (before ES6), JavaScript only had two kinds of scopes: function scope and global scope. 
+        // Variables declared with var are either function-scoped or global-scoped, depending on whether they are declared within a function or outside a function. 
+        // This can be tricky, because blocks with curly braces do not create scopes
+        // In ES6, JavaScript introduced the let and const declarations, which, among other things like temporal dead zones, allow you to create block-scoped variables.
+        // # Closure
+        // A closure is the combination of a function and the lexical environment within which that function was declared. 
+        // This environment consists of any local variables that were in-scope at the time the closure was created
+        // It needs a reference to an instance of an inner/bundled/enclosed function created when its outer function is run. 
+        // This instance maintains a reference to its lexical environment, within which the variable name exists.
+        // # Emulating private methods with closures
+        // Languages such as Java allow you to declare methods as private, meaning that they can be called only by other methods in the same class
+        // JavaScript, prior to classes, didn't have a native way of declaring private methods, but it was possible to emulate private methods using closures. 
+        // Private methods aren't just useful for restricting access to code. They also provide a powerful way of managing your global namespace.
+        // The following code illustrates how to use closures to define public functions that can access private functions and variables. Note that these closures follow the Module Design Pattern.
+        // const counter = (function () {
+        //     let privateCounter = 0;
+        //     function changeBy(val) {
+        //         privateCounter += val;
+        //     }
+        //     return {
+        //         increment() {
+        //             changeBy(1);
+        //         },
+        //         decrement() {
+        //             changeBy(-1);
+        //         },
+        //         value() {
+        //             return privateCounter;
+        //         },
+        //     };
+        // })();
+        // console.log(counter.value()); // 0
+        // counter.increment();
+        // counter.increment();
+        // console.log(counter.value()); // 2
+        // counter.decrement();
+        // console.log(counter.value()); // 1
+        // In previous examples, each closure had its own lexical environment. Here though, there is a single lexical environment that is shared by the three functions: counter.increment, counter.decrement, and counter.value.
+        // The shared lexical environment is created in the body of an anonymous function, which is executed as soon as it has been defined (also known as an IIFE). 
+        // The lexical environment contains two private items: a variable called privateCounter, and a function called changeBy. 
+        // You can't access either of these private members from outside the anonymous function. Instead, you can access them using the three public functions that are returned from the anonymous wrapper.
+        // Those three public functions form closures that share the same lexical environment. Thanks to JavaScript's lexical scoping, they each have access to the privateCounter variable and the changeBy function.
+        // Notice how the two counters maintain their independence from one another. Each closure references a different version of the privateCounter variable through its own closure. 
+        // Each time one of the counters is called, its lexical environment changes by changing the value of this variable. Changes to the variable value in one closure don't affect the value in the other closure.
+        // # Closure scope chain
+        // Every closure has three scopes:
+        // - Local scope (Own scope)
+        // - Enclosing scope (can be block, function, or module scope) *
+        // - Global scope
+        // * In the case where the outer function is itself a nested function, access to the outer function's scope includes the enclosing scope of the outer function—effectively creating a chain of function scopes.
+        // Example with anonymous functions:
+        // global scope
+        // const e = 10;
+        // function sum(a) {
+        //   return function (b) {
+        //     return function (c) {
+        //       // outer functions scope
+        //       return function (d) {
+        //         // local scope
+        //         return a + b + c + d + e;
+        //       };
+        //     };
+        //   };
+        // }
+        // console.log(sum(1)(2)(3)(4)); // 20
+        // In the example above, there's a series of nested functions, all of which have access to the outer functions' scope. In this context, we can say that closures have access to all outer function scopes.
+        // Closures can capture variables in block scopes and module scopes as well. For example, the following creates a closure over the block-scoped variable y:
+        // function outer() {
+        //   const x = 5;
+        //   if (Math.random() > 0.5) {
+        //     const y = 6;
+        //     return () => console.log(x, y);
+        //   }
+        // }
+        // outer()(); // returns 5 6 or not a function
+        // # Creating closures in loops: A common mistake
+        // https://stackoverflow.com/questions/31285911/why-let-and-var-bindings-behave-differently-using-settimeout-function
+        // (function timer() {
+        //     for (var i=0; i<=5; i++) {
+        //         setTimeout(function clog() {console.log(i)}, i*1000);
+        //     }
+        // })();
+        // // returns 6 times 6
+        // (function timer() {
+        //     for (let i=0; i<=5; i++) {
+        //         setTimeout(function clog() {console.log(i)}, i*1000);
+        //     }
+        // })();
+        // // returns 0, 1, 2, 3, 4, 5, 6
+        // With var you have a function scope, and only one shared binding for all of your loop iterations - i.e. the i in every setTimeout callback means the same variable that finally is equal to 6 after the loop iteration ends.
+        // With let you have a block scope and when used in the for loop you get a new binding for each iteration - i.e. the i in every setTimeout callback means a different variable, each of which has a different value: the first one is 0, the next one is 1 etc.
+        // So this:
+        // (function timer() {
+        //     for (let i = 0; i <= 5; i++) {
+        //         setTimeout(function clog() { console.log(i); }, i * 1000);
+        //     }
+        // })();
+        // is equivalent to this using only var:
+        // (function timer() {
+        //     for (var j = 0; j <= 5; j++) {
+        //         (function () {
+        //             var i = j;
+        //             setTimeout(function clog() { console.log(i); }, i * 1000);
+        //         }());
+        //     }
+        // })();
+        // using immediately invoked function expression to use function scope in a similar way as the block scope works in the example with let.
+        // It could be written shorter without using the j name, but perhaps it would not be as clear:
+        // (function timer() {
+        //     for (var i = 0; i <= 5; i++) {
+        //         (function (i) {
+        //             setTimeout(function clog() { console.log(i); }, i * 1000);
+        //         }(i));
+        //     }
+        // })();
+        // And even shorter with arrow functions:
+        // (() => {
+        //     for (var i = 0; i <= 5; i++) {
+        //         (i => setTimeout(() => console.log(i), i * 1000))(i);
+        //     }
+        // })();
+        // (But if you can use arrow functions, there's no reason to use var.)
+        // OTHER EXAMPLE "EMULATING PRIVATE METHODS" (as called by MDN, but I would rather says private variable, because they are actually **public** functions that can access private functions and variables...)
+        // function createPrivateVarMethods(initialValue) {
+        //     let privateVar = initialValue;
+        //     function getPrivateVar() {
+        //       return privateVar;
+        //     }
+        //     function setPrivateVar(newValue) {
+        //       return privateVar = newValue;
+        //     }
+        //     return {
+        //       getPrivateVar,
+        //       setPrivateVar
+        //     };
+        //   }
+        //   const {getPrivateVar, setPrivateVar} = createPrivateVarMethods(1);
+        //   console.log(getPrivateVar()); // 1
+        //   console.log(setPrivateVar(2)); // 2
+        //   console.log(getPrivateVar(1)); // 2
+        // # {END} NOTES: CLOSURES
+        /* */
+
+        /*
+        // EXAMPLE 0
+        // let secondsEllapsed = 0
+        // setInterval(() => {
+        //     console.log(`seconds ellapsed since game start: ${++secondsEllapsed} sec`)
+        // }, 1000)
+        // setTimeout/setInterval create closures over the variables that are used in their callback functions and that are declared outside of their callback functions scope
+        // the closure is formed by the callback function and the variables it references (setInterval creates multiple closures each storing different lexical environment in this case, while setTimeout only one (if no recursion))
+        // the callback function closes over the variables, it keep a reference to the outer variables even if out of their scope (aftert the outer scope has finished executing)
+        // setTimeout/setInterval also maintain references to the callback functions and their associated closures
+        //
+        // EXAMPLE 3
+        // using recursion (the function must be named in this case, so no arrow function or anonymous function)
+        // in function methods, this refers to the object that is on the left of the dot, at the time of invocation. (this.methodName()
+        // in free function invocations, this refers to the global object Window (this === window) (EXCEPT IF INSIDE A CLASS METHOD OR AN IIFE ANYWHERE IN CLASS (ANONYMOUS OR NOT)), BINDING IS LOST, this === undefined, SEE BELOW)
+        // https://stackoverflow.com/questions/4011793/this-is-undefined-in-javascript-class-methods
+        //      happens because a function has been used as a high order function (passed as an argument) and then the scope of this got lost. In such cases, I would recommend passing such function bound to this:
+        //      this.myFunction.bind(this);
+        // so in the example below, in the callback function argument of the setTimeout call, the this value changes, but we can bind it to a specific value to override the meaning of this, and we need to bind the this context of each function down the chain of call to the instance of the class
+        // function recursiveFunctionTimeout() {
+        //     setTimeout(function callback() {
+        //         if (this.lemmingsArr.length < this.lemmingsMax) {
+        //             this.lemmingsArr.push(this.spawnLemming())
+        //             recursiveFunctionTimeout.bind(this)() 
+        //         }
+        //     }.bind(this), 1000) 
+        // }
+        // recursiveFunctionTimeout.bind(this)() 
+        //
+        // EXAMPLE 4
+        // /!\ there is also a global variable window.self! (which is refered by a standalone self in another self variable is not declared down in the scope chain...)
+        // const self = this; // semi-colon is required before IIFE otherwise error "this is not a function"...
+        // (function recursiveFunctionTimeout() {
+        //     // at this point: this === undefined !== window, but self is available in scope chain
+        //     setTimeout(() => {
+        //         // at this point: this === undefined !== window, but self is available in scope chain
+        //         if (self.lemmingsArr.length < self.lemmingsMax) {
+        //             self.lemmingsArr.push(self.spawnLemming())
+        //             recursiveFunctionTimeout()
+        //         }
+        //     }, 1000) // in ()=> arrow function/method, this takes its value from the scope in which it is created.
+        // })() // IIFE (rules does not change for the value of this, IIFE or not)
+        //
+        // EXAMPLE 5
+        // this.recursiveMethodsetTimeout()
+        //
+        // EXAMPLE 7
+        // this.recursiveFunctionExpressionsetTimeout()
+        //
+        // EXAMPLE 8
+        // function recursiveMethodsetTimeout2() {
+        //     // setTimeout(callback = () => { // this function expression syntax to assign an anonymous arrow function to a variable exists (assignment expression), but not valid for the setTimeout callback argument (named functionRef in MDN)
+        //     // (assignment expression is valid for the initialization expression of a for loop for example...)            
+        //     setTimeout(function callback() { 
+        //         if (this.lemmingsArr.length < this.lemmingsMax) {
+        //             this.lemmingsArr.push(this.spawnLemming())
+        //             recursiveMethodsetTimeout2.call(this)
+        //         }
+        //     // }.call(this), 1000) // no because this bypass the delay, and make the call immediately (no further call scheduled after the delay)
+        //     }.bind(this), 1000)
+        // }
+        // recursiveMethodsetTimeout2.call(this)
+        // (note: call() can also be used with built-in function/methods: setTimeout.call())
+        //
+        // EXAMPLE 9
+        // forEach allows to pass and explicitly attach the this keyword to its anonymous function argument, via the thisArg argument
+        // (There's no option to pass a thisArg to setTimeout as there is in Array methods such as forEach() and reduce())
+        //
+        // EXAMPLE 10
+        // recursion with anonymous function (but still requires a variable for the function expression...)
+        // const self = this
+        // const recursiveFunctionExpressionsetTimeout = function() { // not a method this time <> EXAMPLE 7
+        //     setTimeout(() => {
+        //         if (self.lemmingsArr.length < self.lemmingsMax) {
+        //             self.lemmingsArr.push(self.spawnLemming())
+        //             recursiveFunctionExpressionsetTimeout()
+        //         }
+        //     }, 1000)
+        // }
+        // recursiveFunctionExpressionsetTimeout()
+        */
+
+        function makeClosureFn() {
+            let closedOverIntervalId = null
+            function innerFn() {
+                closedOverIntervalId = setInterval(() => {
+                    if (this.lemmingsArr.length < this.lemmingsMax)
+                        this.lemmingsArr.push(this.spawnLemming())
+                    else clearInterval(closedOverIntervalId)
+                }, 1000)
+            }
+            return innerFn
+        }
+        const closureFn = makeClosureFn()
+        closureFn.bind(this)()
+
     }
+
+    /*
+    // EXAMPLE 5
+    // recursiveMethodsetTimeout() {
+    //     const self = this
+    //     setTimeout(() => {
+    //         if (self.lemmingsArr.length < self.lemmingsMax) {
+    //             self.lemmingsArr.push(self.spawnLemming())
+    //             self.recursiveMethodsetTimeout()
+    //         }
+    //     }, 1000)
+    // }
+    //
+    // EXAMPLE 6
+    // recursiveIIFEsetTimeout = (() => {
+    //     setTimeout(() => {
+    //         if (this.lemmingsArr.length < this.lemmingsMax) {
+    //             this.lemmingsArr.push(this.spawnLemming())
+    //             // not possible to call the callback function again here because it is anonymous...
+    //         }
+    //     }, 1000)
+    // })()
+    //
+    // EXAMPLE 7
+    // recursiveFunctionExpressionsetTimeout = function() { // equivalent to the method declaration syntax (ie without the "function" keyword): this === instance
+    //     const self = this
+    //     setTimeout(() => {
+    //         if (self.lemmingsArr.length < self.lemmingsMax) {
+    //             self.lemmingsArr.push(self.spawnLemming())
+    //             self.recursiveFunctionExpressionsetTimeout()
+    //         }
+    //     }, 1000)
+    // }
+    */
 
     createGround() {
         const ground = new Ground()        
@@ -69,6 +399,10 @@ class Game {
                 clearInterval(lemming.intervalId)
                 lemming.intervalId = 0
                 lemming.block()
+            } else if (lemming.state === 'block') {
+                clearInterval(lemming.intervalId)
+                lemming.intervalId = 0
+                lemming.bomb()
             }
         })
         if (this.player) {
@@ -171,7 +505,7 @@ class Floor {
     createDomElement() {
         const floorDomElement = document.createElement("div")
         floorDomElement.classList.add("floor")
-
+        
         // or vh / vw
         floorDomElement.style.width = this.width + "%"
         floorDomElement.style.height = this.height + "%"
@@ -182,6 +516,25 @@ class Floor {
 
         return boardDomElement.appendChild(floorDomElement)
     }
+
+    /******************/
+    /* Floor > skills */
+    /******************/
+
+    break(breakPosStart, breakPosEnd) {
+
+        const floorPart2 = game.createFloor()
+        game.floorsArr.push(floorPart2)
+        floorPart2.left = breakPosEnd
+        floorPart2.domElement.style.left = floorPart2.left + "%"
+        floorPart2.width = this.left + this.width - breakPosEnd
+        floorPart2.domElement.style.width = floorPart2.width + "%"
+
+        // floorPart1 (after floorPart2 because I need the dimensions in floorPart2, avoiding variables...)
+        this.width = breakPosStart - this.left
+        this.domElement.style.width = this.width + "%"
+    }
+
 }
 
 /**********/
@@ -206,7 +559,10 @@ class Ground extends Floor {
         /* Ground > init */
         /*****************/
 
+        this.domElement.remove()
+        this.domElement = null
         this.domElement = super.createDomElement()
+        this.domElement.classList.replace('floor', 'ground')
     }
 
     /********************/
@@ -312,9 +668,9 @@ class Lemming {
         return boardDomElement.appendChild(lemmingDomElement)
     }
 
-    /**************************/
-    /* Lemming > basic skills */
-    /**************************/
+    /********************/
+    /* Lemming > skills */
+    /********************/
 
     // DEBUG
     // game.lemmingsArr.filter(lemming => lemming.id === 1)[0].left
@@ -409,7 +765,20 @@ class Lemming {
     }
 
     bomb() {
-
+        this.state = 'bomb'
+        this.domElement.classList.replace('blocker', 'bomber')
+        clearInterval(this.intervalId)
+        this.intervalId = null
+        // this.intervalId = setTimeout(this.remove.bind(this), 2000) 
+        // needs explicit binding, otherwise this context references window (free function invocation of a declared non-anonymous function), 
+        // setTimeout is weird in this case, it should perform a method call, not a free function invocation, so no idea how it calls the callback function provided, maybe callbackName.bind(window)() by default?...
+        this.intervalId = setTimeout(() => {
+            const floorBelow = this.willCollideFloor()
+            // if (floorBelow instanceof Floor) // a Ground instance returns true
+            if (!(floorBelow instanceof Ground)) // to disable ground breaking
+                floorBelow.break(this.left, this.left + this.width)
+            this.remove() // ok, default binding to this context
+        }, 2000) 
     }
 
     /****************************/
@@ -417,6 +786,8 @@ class Lemming {
     /****************************/
 
     remove() {
+        console.log(game);
+        
         game.lemmingsArr.filter(lemming => lemming.id === this.id)[0].domElement.remove()
         // game.lemmingsArr.splice(game.lemmingsArr.indexOf(game.lemmingsArr.filter(lemming => lemming.id === this.id)[0]), 1)
         game.lemmingsArr.splice(game.lemmingsArr.indexOf(this), 1) // directly...
@@ -538,7 +909,7 @@ class Lemming {
 /* main */
 /********/
 
-const game = new Game()
+const game = new Game() // assignment to a variable of the instance created from a declared class (also possible to make instances from a class expression (anonymous or named), without declaring it)
 game.start()
 
 function round(float, digits) {

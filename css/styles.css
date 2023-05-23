@@ -36,6 +36,11 @@ body {
     position: absolute;
 }
 
+.bomber {
+    background-color: red;
+    position: absolute;
+}
+
 .floor {
     background-color: rgb(243, 243, 87);
     position: absolute;
