@@ -24,14 +24,14 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 # to do (priority descending)
 
 - change % to vw
-- add debug mode
 - finish to implement player and re-enable it?
 - upgrade images version
-- add different walk/fall speeds
 - fix "FIX" when needed
 - fix typo in old commit message
+- add lava floor
+- add obstacles
+- add umbrella skill
 
-- LEMMING OUT SCORE + WIN/LOSE + REPLAY
 - deploy online using GitHub Pages
 - Stick with KISS (Keep It Simple Stupid) and DRY (Don’t Repeat Yourself) principles...
 

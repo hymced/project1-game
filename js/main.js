@@ -26,9 +26,12 @@ class Game {
         /* Game > settings */
         /*******************/
 
-        this.lemmingsMax = 10
-        this.speedFactor = 0.5
-        this.scoreInMin = 8 // 80 %
+        this.settings = {}
+        this.settings.lemmingsMax = 10
+        this.settings.speedFactorWalk = 0.25
+        this.settings.speedFactorFall = 1.5
+        this.settings.scoreInMin = 8 // 80 %
+        this.settings.disableDebugMode = true
 
     }
 
@@ -70,6 +73,7 @@ class Game {
     }
 
     start() {
+        if (this.settings.disableDebugMode === true) this.addDomElementDisableDebugMode()
         this.boardDomElement = document.getElementById("board")
         // this.player = new Player()
         this.floorsArr.push(this.createGround())
@@ -80,7 +84,7 @@ class Game {
         // 
         // EXAMPLE 1
         // this.intervalId = setInterval(() => {
-        //     if (this.lemmingsArr.length < this.lemmingsMax)
+        //     if (this.lemmingsArr.length < this.settings.lemmingsMax)
         //         this.lemmingsArr.push(this.spawnLemming())
         //     else clearInterval(this.intervalId)
         // }, 1000)
@@ -88,7 +92,7 @@ class Game {
         // 
         // EXAMPLE 2
         // setInterval(() => {
-        //     if (this.lemmingsArr.length < this.lemmingsMax)
+        //     if (this.lemmingsArr.length < this.settings.lemmingsMax)
         //         this.lemmingsArr.push(this.spawnLemming())
         // }, 1000)
         // or don't clear the interval, the callback function will continue to the called but will do nothing...
@@ -266,7 +270,7 @@ class Game {
         // so in the example below, in the callback function argument of the setTimeout call, the this value changes, but we can bind it to a specific value to override the meaning of this, and we need to bind the this context of each function down the chain of call to the instance of the class
         // function recursiveFunctionTimeout() {
         //     setTimeout(function callback() {
-        //         if (this.lemmingsArr.length < this.lemmingsMax) {
+        //         if (this.lemmingsArr.length < this.settings.lemmingsMax) {
         //             this.lemmingsArr.push(this.spawnLemming())
         //             recursiveFunctionTimeout.bind(this)() 
         //         }
@@ -281,7 +285,7 @@ class Game {
         //     // at this point: this === undefined !== window, but self is available in scope chain
         //     setTimeout(() => {
         //         // at this point: this === undefined !== window, but self is available in scope chain
-        //         if (self.lemmingsArr.length < self.lemmingsMax) {
+        //         if (self.lemmingsArr.length < self.settings.lemmingsMax) {
         //             self.lemmingsArr.push(self.spawnLemming())
         //             recursiveFunctionTimeout()
         //         }
@@ -299,7 +303,7 @@ class Game {
         //     // setTimeout(callback = () => { // this function expression syntax to assign an anonymous arrow function to a variable exists (assignment expression), but not valid for the setTimeout callback argument (named functionRef in MDN)
         //     // (assignment expression is valid for the initialization expression of a for loop for example...)            
         //     setTimeout(function callback() { 
-        //         if (this.lemmingsArr.length < this.lemmingsMax) {
+        //         if (this.lemmingsArr.length < this.settings.lemmingsMax) {
         //             this.lemmingsArr.push(this.spawnLemming())
         //             recursiveMethodsetTimeout2.call(this)
         //         }
@@ -318,7 +322,7 @@ class Game {
         // const self = this
         // const recursiveFunctionExpressionsetTimeout = function() { // not a method this time <> EXAMPLE 7
         //     setTimeout(() => {
-        //         if (self.lemmingsArr.length < self.lemmingsMax) {
+        //         if (self.lemmingsArr.length < self.settings.lemmingsMax) {
         //             self.lemmingsArr.push(self.spawnLemming())
         //             recursiveFunctionExpressionsetTimeout()
         //         }
@@ -331,7 +335,7 @@ class Game {
             let closedOverIntervalId = null
             function innerFn() {
                 closedOverIntervalId = setInterval(() => {
-                    if (this.lemmingsArr.length < this.lemmingsMax)
+                    if (this.idLastSpawnLemming < this.settings.lemmingsMax)
                         this.lemmingsArr.push(this.spawnLemming())
                     else clearInterval(closedOverIntervalId)
                 }, 1000)
@@ -348,7 +352,7 @@ class Game {
     // recursiveMethodsetTimeout() {
     //     const self = this
     //     setTimeout(() => {
-    //         if (self.lemmingsArr.length < self.lemmingsMax) {
+    //         if (self.lemmingsArr.length < self.settings.lemmingsMax) {
     //             self.lemmingsArr.push(self.spawnLemming())
     //             self.recursiveMethodsetTimeout()
     //         }
@@ -358,7 +362,7 @@ class Game {
     // EXAMPLE 6
     // recursiveIIFEsetTimeout = (() => {
     //     setTimeout(() => {
-    //         if (this.lemmingsArr.length < this.lemmingsMax) {
+    //         if (this.lemmingsArr.length < this.settings.lemmingsMax) {
     //             this.lemmingsArr.push(this.spawnLemming())
     //             // not possible to call the callback function again here because it is anonymous...
     //         }
@@ -369,7 +373,7 @@ class Game {
     // recursiveFunctionExpressionsetTimeout = function() { // equivalent to the method declaration syntax (ie without the "function" keyword): this === instance
     //     const self = this
     //     setTimeout(() => {
-    //         if (self.lemmingsArr.length < self.lemmingsMax) {
+    //         if (self.lemmingsArr.length < self.settings.lemmingsMax) {
     //             self.lemmingsArr.push(self.spawnLemming())
     //             self.recursiveFunctionExpressionsetTimeout()
     //         }
@@ -398,13 +402,22 @@ class Game {
     }
 
     isEnd() {
-        return (this.idLastSpawnLemming === this.lemmingsMax && this.lemmingsArr.length === 0)
+        return (this.idLastSpawnLemming === this.settings.lemmingsMax && this.lemmingsArr.length === 0)
     }
 
     end() {
-        if (Math.floor(this.idsLemmingsExitArr.length / this.lemmingsMax * 100) >= this.scoreInMin)
+        // if (Math.floor(this.idsLemmingsExitArr.length / this.settings.lemmingsMax * 100) >= (this.settings.scoreInMin / this.settings.lemmingsMax * 100))
+        if (this.idsLemmingsExitArr.length >= this.settings.scoreInMin)
             alertTimeout("a job well done!")
         else location.href = './gameover.html';
+    }
+
+    addDomElementDisableDebugMode() {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = './css/nodebug.css'
+        var linkLast = document.querySelector('head link:last-of-type');
+        linkLast.insertAdjacentElement('beforeend', link);
     }
     
     attachEventListeners() {
@@ -741,9 +754,9 @@ class Lemming {
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-fall-anim.gif">`;
         this.intervalId = setInterval(() => {
         const floorBelow = this.willCollideFloor()
-        const exitBelow = this.willReachExit()
+        const exitBelow = this.hasReachedExit()
         if (!floorBelow) {
-            this.top += 1 * game.speedFactor
+            this.top += 1 * game.settings.speedFactorFall
             this.domElement.style.top = this.top + "%"
             if (exitBelow) { // will walk towards it after reaching the floor
                 if (this.isRightOfExit())
@@ -780,11 +793,11 @@ class Lemming {
                 if (this.direction === 'right') {
                     if ([...this.domElement.firstChild.classList].indexOf('flip') !== -1) 
                         this.domElement.firstChild.classList.remove("flip")
-                    this.left += 1 * game.speedFactor
+                    this.left += 1 * game.settings.speedFactorWalk
                 } else if (this.direction === 'left') {
                     if ([...this.domElement.firstChild.classList].indexOf('flip') === -1) 
                         this.domElement.firstChild.classList.add("flip")
-                    this.left -= 1 * game.speedFactor
+                    this.left -= 1 * game.settings.speedFactorWalk
                 }
                 this.domElement.style.left = this.left + "%"
             } else if (blockerFront) {
@@ -922,7 +935,7 @@ class Lemming {
             const lemmingRect = this.domElement.getBoundingClientRect() 
             const spaceBelow = floorRect.top - lemmingRect.bottom
             if ((this.left + this.width) > floor.left && this.left < (floor.left + floor.width)) {
-                if(spaceBelow / boardRect.height * 100 < 1 * game.speedFactor && spaceBelow >= 0) { // 1 to anticipate other values for freefall or walk speed in game settings
+                if(spaceBelow / boardRect.height * 100 < 1 * game.settings.speedFactorFall && spaceBelow >= 0) { // 1 to anticipate other values for freefall or walk speed in game settings
                     floorBelow = floor
                 }
             }
@@ -938,12 +951,12 @@ class Lemming {
             if ((this.top + this.height) > blocker.top && this.top < (blocker.top + blocker.height)) {
                 if (this.direction === 'right') {
                     const spaceFront = blocker.left - (this.left + this.width)
-                    if(spaceFront < 1 * game.speedFactor && spaceFront >= 0) {
+                    if(spaceFront < 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
                         blockerFront = blocker
                     }
                 } else if (this.direction === 'left') {
                     const spaceFront = this.left - (blocker.left + blocker.width)
-                    if(spaceFront < 1 * game.speedFactor && spaceFront >= 0) {
+                    if(spaceFront < 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
                         blockerFront = blocker
                     }
                 }
@@ -958,19 +971,19 @@ class Lemming {
         if (floorBelow) {
             if (this.direction === 'right') {
                 const spaceFront = (floorBelow.left + floorBelow.width) - this.left
-                if(spaceFront <= 1 * game.speedFactor && spaceFront >= 0) {
+                if(spaceFront <= 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
                     return true
                 } else return false
             } else if (this.direction === 'left') {
                 const spaceFront = (this.left + this.width) - floorBelow.left
-                if(spaceFront <= 1 * game.speedFactor && spaceFront >= 0) {
+                if(spaceFront <= 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
                     return true
                 } else return false
             }
         } else return false
     }
     
-    willReachExit() {
+    hasReachedExit() {
         if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height)) // lemming must be entirely within exit vertical bounderies (border width included with box-sizing: border-box;)
             && (this.left + this.width) <= (game.exit.left + game.exit.width) && this.left >= game.exit.left // lemming must be entirely within exit horizontal bounderies (border width included with box-sizing: border-box;)
         ) return true
@@ -981,12 +994,12 @@ class Lemming {
         if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height))) { // lemming must be entirely within exit vertical bounderies (border width included with box-sizing: border-box;)     
             if (this.direction === 'right') {
                 const spaceFront = (game.exit.left + game.exit.width / 2) - (this.left + this.width / 2) // lemming must reach the center of exit
-                if(spaceFront < 1 * game.speedFactor && spaceFront >= 0) {
+                if(spaceFront < 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
                     return true
                 }
             } else if (this.direction === 'left') {
                 const spaceFront = (this.left + this.width / 2) - (game.exit.left + game.exit.width / 2) // lemming must reach the center of exit
-                if(spaceFront < 1 * game.speedFactor && spaceFront >= 0) {
+                if(spaceFront < 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
                     return true
                 }
             }
@@ -1020,7 +1033,7 @@ function alertTimeout(text) {
 const rules = `
     Welcome to Lemming's world!
     
-    Your goal is to have at least ${Math.floor(game.scoreInMin / game.lemmingsMax * 100)} % of lemmings **IN** the **EXIT** at the bottom.
+    Your goal is to have at least ${Math.floor(game.settings.scoreInMin / game.settings.lemmingsMax * 100)} % of lemmings **IN** the **EXIT** at the bottom.
 
     Click on them to activate their **skills**!
 
