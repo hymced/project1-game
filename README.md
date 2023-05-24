@@ -23,7 +23,10 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 
 [playthrought (DOS)](https://www.youtube.com/watch?v=xIuxB1oR2WQ )
 
-![gif](https://i.gifer.com/80rm.gif)
+<!-- ![lemming-gif-alt-text](https://i.gifer.com/80rm.gif) -->
+<!-- animated gif not visible in GitHub -->
+
+<img src="https://i.gifer.com/80rm.gif">
 
 &nbsp;
 
