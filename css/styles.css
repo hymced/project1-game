@@ -12,6 +12,11 @@ body {
 
 #scores {
     color: white;
+    font-family: sans-serif;
+    padding: 1%
+}
+#scores p {
+    margin: 0.5em;
 }
 
 .lemming {

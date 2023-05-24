@@ -409,7 +409,12 @@ class Game {
         // if (Math.floor(this.idsLemmingsExitArr.length / this.settings.lemmingsMax * 100) >= (this.settings.scoreInMin / this.settings.lemmingsMax * 100))
         if (this.idsLemmingsExitArr.length >= this.settings.scoreInMin)
             alertTimeout("a job well done!")
-        else location.href = './gameover.html';
+        else {
+            const scoreIn = game.idsLemmingsExitArr.length
+            const scoreInPercent = Math.floor(game.idsLemmingsExitArr.length / game.idLastSpawnLemming * 100, 0)
+            location.href = `./gameover.html?scoreIn=${scoreIn}&scoreInPercent=${scoreInPercent}`
+            // if not using a redirect and opening a new window, it is possible to pass variable via addEventListener('message', ) + postMessage()
+        }
     }
 
     addDomElementDisableDebugMode() {

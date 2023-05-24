@@ -23,14 +23,15 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 
 # to do (priority descending)
 
+- upgrade images version
+- add floor obstacles
+- add lava floor
+- add umbrella skill
 - change % to vw
 - finish to implement player and re-enable it?
-- upgrade images version
 - fix "FIX" when needed
 - fix typo in old commit message
-- add lava floor
-- add obstacles
-- add umbrella skill
+
 
 - deploy online using GitHub Pages
 - Stick with KISS (Keep It Simple Stupid) and DRY (Don’t Repeat Yourself) principles...

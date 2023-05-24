@@ -5,11 +5,26 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lemmings clone | Game Over</title>
+    <style>
+        body {
+            font-family: sans-serif;
+        }    
+    </style>
 </head>
 <body>
     <h1>Game Over</h1>
+    <p>your score IN: <span id="in">0</span> (<span id="in-percent">0</span> %)</p>
     <p>
         <a href="./index.html">try again</a>
     </p>
+
+    <script>
+        const url = new URL(window.location.href);
+        const scoreIn = url.searchParams.get("scoreIn")
+        const scoreInPercent = url.searchParams.get("scoreIn")
+        window.history.replaceState({}, document.title, "./gameover.html"); // replace url to hide parameters/query strings without addind it to history (no back button, otherwise use pushState())
+        document.querySelector("body p span#in").innerText = scoreIn
+        document.querySelector("body p span#in-percent").innerText = scoreInPercent
+    </script>
 </body>
 </html>
