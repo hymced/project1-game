@@ -21,7 +21,7 @@
     <script>
         const url = new URL(window.location.href);
         const scoreIn = url.searchParams.get("scoreIn")
-        const scoreInPercent = url.searchParams.get("scoreIn")
+        const scoreInPercent = url.searchParams.get("scoreInPercent")
         window.history.replaceState({}, document.title, "./gameover.html"); // replace url to hide parameters/query strings without addind it to history (no back button, otherwise use pushState())
         document.querySelector("body p span#in").innerText = scoreIn
         document.querySelector("body p span#in-percent").innerText = scoreInPercent
