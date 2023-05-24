@@ -890,14 +890,16 @@ class Lemming {
             // if (floorBelow instanceof Floor) // a Ground instance returns true
             if (!(floorBelow instanceof Ground)) // to disable ground breaking
                 floorBelow.break(this.left, this.left + this.width)
-            this.remove() // ok, default binding to this context
-        }, 2000) 
+            // this.remove() // ok, default binding to this context
+            setTimeout(this.remove.bind(this), 2000)
+        }, 1000) 
     }
 
     explodeTimeout(delay) {
         setTimeout(() => {
             const urlImage = "./images/lemming gifs v5 consolidated/lemming-explosion-2.gif"
-            this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-explosion-2-anim.gif">`;
+            // this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-explosion-2-anim.gif">`;
+            this.domElement.innerHTML = `<img src="${urlImage}?a=${Math.random()}" alt="lemming-explosion-2-anim.gif">`;
         }, delay)
     }
 
