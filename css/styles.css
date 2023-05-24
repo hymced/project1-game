@@ -97,7 +97,9 @@ body {
 }
 .walk img.flip {
     transform: scaleX(-1);
-    -webkit-transform : scaleX(-1); /* to target older Chrome versions and Firefox that are based on WebKit rendering engine (-webkit is a vendor prefix for css properties, used to provide support for features that were experimental or non-standard in specific browsers during the experimental or early stages of implementation) */
+    -webkit-transform : scaleX(-1);
+    /* to target older Chrome versions and Firefox that are based on WebKit rendering engine (-webkit is a vendor prefix for css properties, used to provide support for features that were experimental or non-standard in specific browsers during the experimental or early stages of implementation) */
+    /* buggy, there is 1 pixel offset up... */
 }
 
 .hardcoded {

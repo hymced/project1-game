@@ -28,6 +28,7 @@ class Game {
 
         this.settings = {}
         this.settings.lemmingsMax = 10
+        this.settings.spawnDelay = 2000
         this.settings.speedFactorWalk = 0.25
         this.settings.speedFactorFall = 1.5
         this.settings.scoreInMin = 8 // 80 %
@@ -338,7 +339,7 @@ class Game {
                     if (this.idLastSpawnLemming < this.settings.lemmingsMax)
                         this.lemmingsArr.push(this.spawnLemming())
                     else clearInterval(closedOverIntervalId)
-                }, 1000)
+                }, this.settings.spawnDelay)
             }
             return innerFn
         }
@@ -755,7 +756,7 @@ class Lemming {
             this.domElement.classList.add('fall')
         }
         else this.domElement.classList.replace('walk', 'fall')
-        const urlImage = "./images/lemming gifs v1/lemming-fall-anim.gif"
+        const urlImage = "./images/lemming gifs v5 consolidated/lemming-fall-anim.gif"
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-fall-anim.gif">`;
         this.intervalId = setInterval(() => {
         const floorBelow = this.willCollideFloor()
@@ -788,7 +789,7 @@ class Lemming {
     walk() {
         this.state = 'walk'
         this.domElement.classList.replace('fall', 'walk')
-        const urlImage = "./images/lemming gifs v1/lemming-walk-anim.gif"
+        const urlImage = "./images/lemming gifs v5 consolidated/lemming-walk-anim.gif"
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-walk-anim.gif">`;
         this.intervalId = setInterval(() => {
             const blockerFront = this.willCollideBlocker()
@@ -842,7 +843,7 @@ class Lemming {
     block() {
         this.state = 'block'
         this.domElement.classList.replace('walk', 'block')
-        const urlImage = "./images/lemming gifs v2/lemming-stop-anim.gif"
+        const urlImage = "./images/lemming gifs v5 consolidated/lemming-stop-anim.gif"
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-stop-anim.gif">`;
         clearInterval(this.intervalId)
         this.intervalId = null
@@ -860,6 +861,25 @@ class Lemming {
     bomb() {
         this.state = 'bomb'
         this.domElement.classList.replace('block', 'bomb')
+        const urlImage = "./images/lemming gifs v6.explosion/lemming-explosion-3.gif"
+        // ---
+        this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-explosion-anim.gif">`;
+        // restartGifAnim(this.domElement.firstChild) // not working, workaround is to change the url of the gif each time, but it will redownload it each time...
+        // ---
+        this.domElement.innerHTML = `<img src="${urlImage}?id=${this.id}" alt="lemming-explosion-anim.gif">`; // ok restarts gif
+        // this.domElement.innerHTML = `<img src="${urlImage}?a=${Math.random()}" alt="lemming-explosion-anim.gif">`; // ok restarts gif
+        // ---
+        // this.domElement.innerHTML = `<img src="" alt="lemming-explosion-anim.gif">`; this.domElement.firstChild.src = urlImage // does not work either
+        // ---
+        // does not work either
+        // this.domElement.innerHTML = `<img src="" alt="lemming-explosion-anim.gif">`
+        // this.domElement.firstChild.style.offsetHeight;
+        // this.domElement.firstChild.src = urlImage 
+        // ---
+        // https://stackoverflow.com/questions/10730212/proper-way-to-reset-a-gif-animation-with-displaynone-on-chrome
+        // restartGifAnimTimeout(this.domElement.firstChild) // restarts all not each separately!
+        // ---
+        this.explodeTimeout(1000)
         clearInterval(this.intervalId)
         this.intervalId = null
         // this.intervalId = setTimeout(this.remove.bind(this), 2000) 
@@ -872,6 +892,13 @@ class Lemming {
                 floorBelow.break(this.left, this.left + this.width)
             this.remove() // ok, default binding to this context
         }, 2000) 
+    }
+
+    explodeTimeout(delay) {
+        setTimeout(() => {
+            const urlImage = "./images/lemming gifs v5 consolidated/lemming-explosion-2.gif"
+            this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-explosion-2-anim.gif">`;
+        }, delay)
     }
 
     /****************************/
@@ -1068,4 +1095,20 @@ function round(float, digits) {
     // or
 
     return +float.toFixed(digits)
+}
+
+// does not work
+// chatGPT suggests to listen for the img onload event
+function restartGifAnim(imgDomElement){ 
+    let imgSrc = imgDomElement.src;
+    imgDomElement.src = ""
+    imgDomElement.src = imgSrc; 
+}
+
+function restartGifAnimTimeout(imgDomElement){
+    let imgSrc = imgDomElement.src; 
+    imgDomElement.src = ""
+    setTimeout(() => {
+        imgDomElement.src = imgSrc; 
+    }, 0)
 }

@@ -38,12 +38,14 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 
 # To do (priority descending)
 
-- upgrade images version
+- use gif v6 for walk left instead of buggy css transform
 - add floor obstacles
 - add lava floor
 - add umbrella skill
 - change `%` to `vw`
 - finish to implement player and re-enable it?
+- bug when bomb when thre is already no floor below
+- find better solution to workaround for restartGifAnim()
 - fix `FIX` when needed
 - fix typo in old commit message
 
@@ -133,3 +135,12 @@ https://docs.google.com/presentation/u/0/
 - Don’t include any code in your slides. Nobody will read it.
 - Don’t include a slide for GitHub graphs.
 - If you think that deviating from the structure improves your presentation, feel free to do so. This suggested structure is mostly for people who don’t know what to do.
+
+&nbsp;
+
+---
+Notes
+
+Lemmings gifs colors
+- Green #00FF00
+- Blue #0000FF
