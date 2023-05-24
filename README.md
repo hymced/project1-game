@@ -24,9 +24,13 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 [playthrought (DOS)](https://www.youtube.com/watch?v=xIuxB1oR2WQ )
 
 <!-- ![lemming-gif-alt-text](https://i.gifer.com/80rm.gif) -->
-<!-- animated gif not visible in GitHub -->
+<!-- <img src="https://i.gifer.com/80rm.gif"> -->
 
-<img src="https://i.gifer.com/80rm.gif">
+<!-- animated gif not visible in GitHub because Giffer is actually returning a .mp4 file! -->
+
+![lemming-gif-alt-text][lemming-gif]
+
+[lemming-gif]: https://i.gifer.com/origin/43/4381cee4efb9b74ab41c7c2a2d38ce81.gif
 
 &nbsp;
 
@@ -67,6 +71,28 @@ var g = 1
 1. new spec but impossible to do without refactoring all code, is it normal?
 2. navigate code by symbols in Chrome Debug Tools > Sources like in GitHub?
 3. Chrome debugging possible to change variables value live?
+
+&nbsp;
+
+---
+
+## Directory Tree
+
+`git ls-tree --name-only -r  master`
+
+* [README.md](README.md)
+* [index.html](index.html)
+* [gameover.html](gameover.html)
+* [js](js)
+    - [main.js](js/main.js)
+* [css](css)
+    - [nodebug.css](css/nodebug.css)
+    - [styles.css](css/styles.css)
+* [images](images)
+    - [ideas](images/ideas)
+    - [lemming gifs v1](images/lemming%20gifs%20v1)
+    - [lemming gifs v2](images/lemming%20gifs%20v2)
+        - ?
 
 &nbsp;
 
