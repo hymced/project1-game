@@ -396,6 +396,16 @@ class Game {
         this.boardDomElement.querySelector("div#scores p span#out").innerText = ++out
         return lemming
     }
+
+    isEnd() {
+        return (this.idLastSpawnLemming === this.lemmingsMax && this.lemmingsArr.length === 0)
+    }
+
+    end() {
+        if (Math.floor(this.idsLemmingsExitArr.length / this.lemmingsMax * 100) >= this.scoreInMin)
+            alertTimeout("a job well done!")
+        else location.href = './gameover.html';
+    }
     
     attachEventListeners() {
         // listen for click to select lemming so the player can trigger a skill
@@ -432,7 +442,7 @@ class Game {
                     lemming.intervalId = 0
                     lemming.bomb()
                 } else if (lemming.state === 'fall') {
-                    console.log("lemming has no skill when falling! maybe it will have umbrella one day...")
+                    console.log("lemming has no skill when falling! maybe it will have an umbrella one day...")
                 }
             } else console.log("lemming missed!")
         })
@@ -856,8 +866,8 @@ class Lemming {
         game.boardDomElement.querySelector("div#scores p span#out").innerText = --out
         // update in counter in scores
         if (this.state === 'exit') {
-            game.boardDomElement.querySelector("div#scores p span#in").innerText = game.idsLemmingsExitArr.length + 1
-            game.boardDomElement.querySelector("div#scores p span#in-percent").innerText = Math.floor((game.idsLemmingsExitArr.length + 1) / game.idLastSpawnLemming * 100, 0)
+            game.boardDomElement.querySelector("div#scores p span#in").innerText = game.idsLemmingsExitArr.length
+            game.boardDomElement.querySelector("div#scores p span#in-percent").innerText = Math.floor(game.idsLemmingsExitArr.length / game.idLastSpawnLemming * 100, 0)
         }
 
         game.lemmingsArr.filter(lemming => lemming.id === this.id)[0].domElement.remove()
@@ -866,6 +876,8 @@ class Lemming {
         clearInterval(this.intervalId)
         this.intervalId = null // not necessary, instance will be garbage collected at the end of this block scope anyway because this keyword is the only reference to it at this point
         this.state = null // dito
+
+        if (game.isEnd()) game.end()
     }
 
     isOut() {               
@@ -1008,7 +1020,7 @@ function alertTimeout(text) {
 const rules = `
     Welcome to Lemming's world!
     
-    Your goal is to have more than ${Math.floor(game.scoreInMin / game.lemmingsMax * 100)} % of lemmings **IN** the **EXIT** at the bottom.
+    Your goal is to have at least ${Math.floor(game.scoreInMin / game.lemmingsMax * 100)} % of lemmings **IN** the **EXIT** at the bottom.
 
     Click on them to activate their **skills**!
 

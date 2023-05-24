@@ -29,6 +29,7 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 - upgrade images version
 - add different walk/fall speeds
 - fix "FIX" when needed
+- fix typo in old commit message
 
 - LEMMING OUT SCORE + WIN/LOSE + REPLAY
 - deploy online using GitHub Pages
