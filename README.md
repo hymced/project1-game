@@ -25,7 +25,7 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 
 - change % to vw
 
-- LEMMING OUT SCORE + WIN/LOSE
+- LEMMING OUT SCORE + WIN/LOSE + REPLAY
 - deploy online using GitHub Pages
 - Stick with KISS (Keep It Simple Stupid) and DRY (Don’t Repeat Yourself) principles...
 
@@ -35,6 +35,9 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 ]
 
 - make presentation
+
+questions to ask:
+- new spec but impossible to do without refactoring all code, is it normal?
 
 Format
 Talking with Slides: 3 minutes

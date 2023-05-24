@@ -22,23 +22,71 @@ body {
     background-position: center; 
     */
 
+    /*
+    METHOD 3 not ideal... works to fit image in a vertical rectangle, but not in a horizontal rectangle
+    */
+    /* 
+    display: flex;
+    justify-content: center;
+    / * align-items: center; * /
+    align-items: flex-end;
+    */
+
+    /*
+    METHOD 4 ok but won't make the image grow if smaller than container
+    */
+    /* 
+    display: flex;
+    justify-content: center;
+    align-items: center; 
+    */
+
 }
 
 .lemming img {
     
+    /*
+    METHOD 0, need to know the greatest dim of the image, works in a vertical rectangle
+    */
     /* 
-    max-height: 100%;
-    max-width: 100%; 
+    width: 100%;
+    height: auto;
     */
 
     /* 
     METHOD 2 to have the image using all the space of the div parent container of the img and keeping aspect ratio
     https://stackoverflow.com/questions/34247337/object-fit-not-affecting-images/34247563#34247563 
     */
+    /* 
     width: 100%;
     height: 100%; 
-    object-fit: contain;
-    
+    object-fit: contain; 
+    */
+    width: 100%;
+    height: auto; 
+    object-fit: contain; 
+    position: absolute;
+    bottom: 0;
+
+    /*
+    METHOD 3 not ideal... works to fit image in a vertical rectangle, but not in a horizontal rectangle
+    */
+    /* flex: 1 0 auto;  */
+    /* shorthand for flex-grow (flex-shrink (flex-basis)) */
+
+    /*
+    METHOD 4 ok but won't make the image grow if smaller than container
+    */
+    /* 
+    max-width: 100%;
+    max-height: 100%;
+    */
+
+}
+
+.lemming img.flip {
+    transform: scaleX(-1);
+    -webkit-transform : scaleX(-1); /* to target older Chrome versions and Firefox that are based on WebKit rendering engine (-webkit is a vendor prefix for css properties, used to provide support for features that were experimental or non-standard in specific browsers during the experimental or early stages of implementation) */
 }
 
 .hardcoded {
@@ -53,8 +101,8 @@ body {
     (chatGPT says because of browser subpixel rendering...) 
     */
 
-    width: 10vw; 
-    height: 10vw;
+    width: 60vw; 
+    height: 40vw;
     background-color: red; /* if using a red background color, the bottom of the image (which is white) may seem to go slightly beyond the bottom of the red area, but its a hardware limitation, red lights being higher in a pixel! this cannot be seen use blue or green! */
     position: absolute
 }
@@ -64,9 +112,25 @@ body {
     position: absolute;
 }
 
+.blocker img {
+    width: 100%;
+    height: auto; 
+    object-fit: contain; 
+    position: absolute;
+    bottom: 0;
+}
+
 .bomber {
     background-color: red;
     position: absolute;
+}
+
+.bomber img {
+    width: 100%;
+    height: auto; 
+    object-fit: contain; 
+    position: absolute;
+    bottom: 0;
 }
 
 .floor {

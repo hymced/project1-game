@@ -408,12 +408,9 @@ class Game {
             // } else if (eventClick.currentTarget.tagName === "img") {
             //     const elementDiv = eventClick.currentTarget.parentNode
             // }
-            
-            console.log(eventClick.target.tagName);
-            console.log(eventClick.target);
 
             let elementDiv = null
-            if (eventClick.target.tagName === "DIV") 
+            if (eventClick.target.tagName === "DIV") // tagName property returns uppercase even if actual html tag is lowercase
                 elementDiv = eventClick.target
             else if (eventClick.target.tagName === "IMG")
                 elementDiv = eventClick.target.parentNode
@@ -719,6 +716,8 @@ class Lemming {
 
     fall() {        
         this.state = 'fall'
+        const urlImage = "./images/lemming gifs v1/lemming-fall-anim.gif"
+        this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-fall-anim.gif">`;
         this.intervalId = setInterval(() => {
         const floorBelow = this.willCollideFloor()
         const exitBelow = this.willReachExit()
@@ -749,14 +748,20 @@ class Lemming {
 
     walk() {
         this.state = 'walk'
+        const urlImage = "./images/lemming gifs v1/lemming-walk-anim.gif"
+        this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-walk-anim.gif">`;
         this.intervalId = setInterval(() => {
             const blockerFront = this.willCollideBlocker()
             const voidFront = this.willBeInVoid()
             const exitFront = this.willExit()
-            if (!blockerFront && !voidFront && !exitFront) {                
+            if (!blockerFront && !voidFront && !exitFront) {  
                 if (this.direction === 'right') {
+                    if ([...this.domElement.firstChild.classList].indexOf('flip') !== -1) 
+                        this.domElement.firstChild.classList.remove("flip")
                     this.left += 1 * game.speedFactor
                 } else if (this.direction === 'left') {
+                    if ([...this.domElement.firstChild.classList].indexOf('flip') === -1) 
+                        this.domElement.firstChild.classList.add("flip")
                     this.left -= 1 * game.speedFactor
                 }
                 this.domElement.style.left = this.left + "%"
