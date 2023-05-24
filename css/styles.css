@@ -10,7 +10,15 @@ body {
     overflow: hidden;
 }
 
+#scores {
+    color: white;
+}
+
 .lemming {
+    /* base class for event listener */
+}
+
+.walk {
     background-color: rgb(0, 178, 0);
     position: absolute;
 
@@ -42,8 +50,7 @@ body {
     */
 
 }
-
-.lemming img {
+.walk img {
     
     /*
     METHOD 0, need to know the greatest dim of the image, works in a vertical rectangle
@@ -83,8 +90,7 @@ body {
     */
 
 }
-
-.lemming img.flip {
+.walk img.flip {
     transform: scaleX(-1);
     -webkit-transform : scaleX(-1); /* to target older Chrome versions and Firefox that are based on WebKit rendering engine (-webkit is a vendor prefix for css properties, used to provide support for features that were experimental or non-standard in specific browsers during the experimental or early stages of implementation) */
 }
@@ -107,12 +113,11 @@ body {
     position: absolute
 }
 
-.blocker {
-    background-color: rgb(65,65,227);
+.fall {
+    background-color: rgb(0, 178, 0);
     position: absolute;
 }
-
-.blocker img {
+.fall img {
     width: 100%;
     height: auto; 
     object-fit: contain; 
@@ -120,12 +125,23 @@ body {
     bottom: 0;
 }
 
-.bomber {
+.block {
+    background-color: rgb(65,65,227);
+    position: absolute;
+}
+.block img {
+    width: 100%;
+    height: auto; 
+    object-fit: contain; 
+    position: absolute;
+    bottom: 0;
+}
+
+.bomb {
     background-color: red;
     position: absolute;
 }
-
-.bomber img {
+.bomb img {
     width: 100%;
     height: auto; 
     object-fit: contain; 

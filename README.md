@@ -24,6 +24,10 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 # to do (priority descending)
 
 - change % to vw
+- add debug mode
+- finish to implement player and re-enable it?
+- upgrade images version
+- add different walk/fall speeds
 
 - LEMMING OUT SCORE + WIN/LOSE + REPLAY
 - deploy online using GitHub Pages
@@ -38,6 +42,8 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 
 questions to ask:
 - new spec but impossible to do without refactoring all code, is it normal?
+- navigate code by symbols in Chrome Debug Tools > Sources like in GitHub?
+- Chrome debugging possible to change variables value live?
 
 Format
 Talking with Slides: 3 minutes

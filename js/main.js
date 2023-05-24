@@ -28,6 +28,7 @@ class Game {
 
         this.lemmingsMax = 10
         this.speedFactor = 0.5
+        this.scoreInMin = 8 // 80 %
 
     }
 
@@ -70,7 +71,7 @@ class Game {
 
     start() {
         this.boardDomElement = document.getElementById("board")
-        //this.player = new Player()
+        // this.player = new Player()
         this.floorsArr.push(this.createGround())
         this.exit = new Exit()
         this.floorsArr.push(this.createFloor())
@@ -388,6 +389,11 @@ class Game {
 
     spawnLemming() {
         const lemming = new Lemming(++this.idLastSpawnLemming)
+        // update spawned counter in scores
+        this.boardDomElement.querySelector("div#scores p span#spawned").innerText = this.idLastSpawnLemming
+        // increment out counter in scores (NOT STORED, SO PLAYER CAN MODIFY THE HTML, BUT IT'S NOT CHEATING BECAUSE THIS VALUE WON'T HELP TO WIN!...)
+        let out = this.boardDomElement.querySelector("div#scores p span#out").innerText // cannot be const because of ++out otherwise error assignment to constant variable
+        this.boardDomElement.querySelector("div#scores p span#out").innerText = ++out
         return lemming
     }
     
@@ -410,9 +416,9 @@ class Game {
             // }
 
             let elementDiv = null
-            if (eventClick.target.tagName === "DIV") // tagName property returns uppercase even if actual html tag is lowercase
+            if (eventClick.target.tagName === "DIV" && [...eventClick.target.classList].indexOf("lemming") !== -1) // tagName property returns uppercase even if actual html tag is lowercase
                 elementDiv = eventClick.target
-            else if (eventClick.target.tagName === "IMG")
+            else if (eventClick.target.tagName === "IMG" && [...eventClick.target.parentNode.classList].indexOf("lemming") !== -1)
                 elementDiv = eventClick.target.parentNode
 
             if (elementDiv) {
@@ -425,6 +431,8 @@ class Game {
                     clearInterval(lemming.intervalId)
                     lemming.intervalId = 0
                     lemming.bomb()
+                } else if (lemming.state === 'fall') {
+                    console.log("lemming has no skill when falling! maybe it will have umbrella one day...")
                 }
             } else console.log("lemming missed!")
         })
@@ -646,7 +654,9 @@ class Exit {
         exitDomElement.style.position = "absolute"
         exitDomElement.style.border = "dashed red"
         exitDomElement.style.borderBottomStyle = "hidden"
-        exitDomElement.style.boxSizing = "border-box"
+        exitDomElement.style.boxSizing = "border-box" 
+        // this simplify the calculation of the center of the exit (border width is included in height/width sizing dimensions)
+        // default box-sizing: content-box;
 
         const boardDomElement = document.getElementById("board")
 
@@ -681,7 +691,7 @@ class Lemming {
 
         this.left = this.left - this.width / 2
         this.domElement = this.createDomElement()
-        this.fall() // all lemmings appears falling out of the hatch
+        this.fall() // all lemmings appear falling out of the hatch
     }
     
     /*********************/
@@ -698,9 +708,6 @@ class Lemming {
         lemmingDomElement.style.top = this.top + "%"
         lemmingDomElement.style.left = this.left + "%"
 
-        const urlImage = "./images/lemming gifs v1/lemming-walk-anim.gif"
-        lemmingDomElement.innerHTML = `<img src="${urlImage}" alt="lemming-walk-anim.gif">`;
-
         const boardDomElement = document.getElementById("board")
 
         return boardDomElement.appendChild(lemmingDomElement)
@@ -716,6 +723,10 @@ class Lemming {
 
     fall() {        
         this.state = 'fall'
+        if (this.domElement.classList.length === 1) { // then new lemming
+            this.domElement.classList.add('fall')
+        }
+        else this.domElement.classList.replace('walk', 'fall')
         const urlImage = "./images/lemming gifs v1/lemming-fall-anim.gif"
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-fall-anim.gif">`;
         this.intervalId = setInterval(() => {
@@ -748,6 +759,7 @@ class Lemming {
 
     walk() {
         this.state = 'walk'
+        this.domElement.classList.replace('fall', 'walk')
         const urlImage = "./images/lemming gifs v1/lemming-walk-anim.gif"
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-walk-anim.gif">`;
         this.intervalId = setInterval(() => {
@@ -801,9 +813,9 @@ class Lemming {
 
     block() {
         this.state = 'block'
+        this.domElement.classList.replace('walk', 'block')
         const urlImage = "./images/lemming gifs v2/lemming-stop-anim.gif"
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-stop-anim.gif">`;
-        this.domElement.classList.replace('lemming', 'blocker')
         clearInterval(this.intervalId)
         this.intervalId = null
     }
@@ -819,7 +831,7 @@ class Lemming {
 
     bomb() {
         this.state = 'bomb'
-        this.domElement.classList.replace('blocker', 'bomber')
+        this.domElement.classList.replace('block', 'bomb')
         clearInterval(this.intervalId)
         this.intervalId = null
         // this.intervalId = setTimeout(this.remove.bind(this), 2000) 
@@ -838,7 +850,16 @@ class Lemming {
     /* Lemming > methods > misc */
     /****************************/
 
-    remove() {       
+    remove() { 
+        // decrement out counter in scores 
+        let out = game.boardDomElement.querySelector("div#scores p span#out").innerText
+        game.boardDomElement.querySelector("div#scores p span#out").innerText = --out
+        // update in counter in scores
+        if (this.state === 'exit') {
+            game.boardDomElement.querySelector("div#scores p span#in").innerText = game.idsLemmingsExitArr.length + 1
+            game.boardDomElement.querySelector("div#scores p span#in-percent").innerText = Math.floor((game.idsLemmingsExitArr.length + 1) / game.idLastSpawnLemming * 100, 0)
+        }
+
         game.lemmingsArr.filter(lemming => lemming.id === this.id)[0].domElement.remove()
         // game.lemmingsArr.splice(game.lemmingsArr.indexOf(game.lemmingsArr.filter(lemming => lemming.id === this.id)[0]), 1)
         game.lemmingsArr.splice(game.lemmingsArr.indexOf(this), 1) // directly...
@@ -936,16 +957,16 @@ class Lemming {
             }
         } else return false
     }
-
+    
     willReachExit() {
-        if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height)) // lemming must be entirely within exit vertical bounderies
-            && (this.left + this.width) <= (game.exit.left + game.exit.width) && this.left >= game.exit.left // lemming must be entirely within exit horizontal bounderies
+        if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height)) // lemming must be entirely within exit vertical bounderies (border width included with box-sizing: border-box;)
+            && (this.left + this.width) <= (game.exit.left + game.exit.width) && this.left >= game.exit.left // lemming must be entirely within exit horizontal bounderies (border width included with box-sizing: border-box;)
         ) return true
         else return false
     }
 
     willExit() {
-        if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height))) { // lemming must be entirely within exit vertical bounderies            
+        if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height))) { // lemming must be entirely within exit vertical bounderies (border width included with box-sizing: border-box;)     
             if (this.direction === 'right') {
                 const spaceFront = (game.exit.left + game.exit.width / 2) - (this.left + this.width / 2) // lemming must reach the center of exit
                 if(spaceFront < 1 * game.speedFactor && spaceFront >= 0) {
@@ -973,6 +994,41 @@ class Lemming {
 
 const game = new Game() // assignment to a variable of the instance created from a declared class (also possible to make instances from a class expression (anonymous or named), without declaring it)
 game.start()
+
+// window.alert("Welcome to Lemming's world!"); 
+// when the modal dialog box appears, the page is still blank
+// js is synchronous, as is DOM manipulation, but the rendering of changes in the DOM by the browser is no (illusion of an asynchronous DOM update)
+// so when the modal dialog box is visible, browser cannot perform renderings tasks, but it resumes once user dismisses it 
+
+function alertTimeout(text) {
+    setTimeout(function() {
+        window.alert(text);
+    }, 100);
+}
+const rules = `
+    Welcome to Lemming's world!
+    
+    Your goal is to have more than ${Math.floor(game.scoreInMin / game.lemmingsMax * 100)} % of lemmings **IN** the **EXIT** at the bottom.
+
+    Click on them to activate their **skills**!
+
+    Pssst...! You have all the time in the world, the game will finish only when there is no more lemmings **OUT**...
+` 
+// multi line strings is possible only with backticks (template literals)
+// alertTimeout(rules); 
+// FIX: if user is too long to dismiss the alert, lemmings are spawned simultaneously
+
+// https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame
+// The window.requestAnimationFrame() method tells the browser that you wish to perform an animation and requests that the browser calls a specified function to update an animation right before the next repaint. The method takes a callback as an argument to be invoked before the repaint.
+// Note: Your callback routine must itself call requestAnimationFrame() again if you want to animate another frame at the next repaint. requestAnimationFrame() is 1 shot.
+function alertAfterBrowserRendering(text) {
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        window.alert(text);
+      })
+    });
+  }
+  alertAfterBrowserRendering(rules)
 
 function round(float, digits) {
     return Math.round(float * 10 ** digits) / 10 ** digits // no parenthesis needed for divisor because exponentiation operator has higher precedence than division operator
