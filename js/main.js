@@ -417,7 +417,7 @@ class Game {
         link.rel = 'stylesheet'
         link.href = './css/nodebug.css'
         var linkLast = document.querySelector('head link:last-of-type');
-        linkLast.insertAdjacentElement('beforeend', link);
+        linkLast.insertAdjacentElement('afterend', link);
     }
     
     attachEventListeners() {
