@@ -28,6 +28,7 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 - finish to implement player and re-enable it?
 - upgrade images version
 - add different walk/fall speeds
+- fix "FIX" when needed
 
 - LEMMING OUT SCORE + WIN/LOSE + REPLAY
 - deploy online using GitHub Pages
