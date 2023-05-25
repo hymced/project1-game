@@ -27,7 +27,7 @@ class Game {
         /*******************/
 
         this.settings = {}
-        this.settings.lemmingsMax = 10
+        this.settings.lemmingsMax = 20
         this.settings.spawnDelay = 2000
         this.settings.speedFactorWalk = 0.25
         this.settings.speedFactorFall = 1.5
@@ -81,6 +81,8 @@ class Game {
         this.exit = new Exit()
         this.floorsArr.push(this.createFloor())
         this.floorsArr.push(this.createFloor(30, 10, 1, 60))
+        this.floorsArr.push(...this.createFloorMultiLayers(70, 40, 1, 40, 2))
+        this.floorsArr.push(...this.createFloorMultiLayers(70, 40, 1, 40, -2))
         this.floorsArr.push(this.createRock())
         this.attachEventListeners()
 
@@ -428,6 +430,17 @@ class Game {
         // ---
         const floor = new Floor(bottom, left, height, width)
         return floor
+    }
+
+    createFloorMultiLayers(bottom, left, height, width, numberLayers) { // support neg numberLayers to add floors below the bottom (bottom will be the top position of the top one)
+        if (numberLayers === undefined) return []
+        if (numberLayers === 0) return []
+        const floors = []
+        for (let i = 1; i <= Math.abs(numberLayers); i++) {
+            const floor = new Floor(bottom + height * (Math.sign(numberLayers) * i - 1 + (Math.sign(numberLayers) === -1 ? 1 : 0)), left, height, width)
+            floors.push(floor)
+        }
+        return floors
     }
 
     createRock() {
@@ -876,7 +889,8 @@ class Lemming {
             const voidFront = this.willBeInVoid()
             const exitFront = this.willExit()
             const rockFront = this.willCollideRock()
-            if (!blockerFront && !voidFront && !exitFront && !rockFront) {
+            const voidBelow = this.isInVoid()
+            if (!blockerFront && !voidFront && !exitFront && !rockFront && !voidBelow) {
                 if (this.direction === 'right') {
                     if ([...this.domElement.firstChild.classList].indexOf('flip') !== -1)
                         this.domElement.firstChild.classList.remove("flip")
@@ -898,6 +912,16 @@ class Lemming {
                     this.left = blockerFront.left + blockerFront.width
                     this.domElement.style.left = this.left + "%"
                 }
+            } else if (voidBelow) {
+                // happens when multiple lemmings stuck in a dug hole (walking), then one explodes,
+                // but there is still another floor within range because the broken one was thinner than the height of falling 1 step
+                // then the conditions are:
+                // (floorBelow = this.willCollideFloor()) && true
+                // (voidFront = this.willBeInVoid()) && false
+                // (voidBelow = this.isInVoid()) && true
+                clearInterval(this.intervalId)
+                this.intervalId = null
+                this.fall()
             } else if (voidFront) {
                 const floorBelow = this.willCollideFloor()
                 if (this.direction === 'right') {
@@ -1073,19 +1097,20 @@ class Lemming {
     // REMINDER: floors have bottom set, but not top
     willCollideFloor() { // also works to detect rock below lemming
         const boardRect = game.boardDomElement.getBoundingClientRect()
-        let floorBelow = null
+        let floorBelowClosest = null
         game.floorsArr.forEach(floor => {
             const floorRect = floor.domElement.getBoundingClientRect()
             const lemmingRect = this.domElement.getBoundingClientRect()
             const spaceBelow = floorRect.top - lemmingRect.bottom
             if ((this.left + this.width) > floor.left && this.left < (floor.left + floor.width)) {
                 if(spaceBelow / boardRect.height * 100 < 1 * game.settings.speedFactorFall && spaceBelow >= 0) { // 1 to anticipate other values for freefall or walk speed in game settings
-                    floorBelow = floor
+                    if (!floorBelowClosest) floorBelowClosest = floor
+                    if (floorBelowClosest.bottom < floor.bottom) floorBelowClosest = floor
                 }
             }
         })
-        if (floorBelow === null) return false
-        else return floorBelow
+        if (floorBelowClosest === null) return false
+        else return floorBelowClosest
     }
 
     willCollideBlocker() {
@@ -1116,7 +1141,7 @@ class Lemming {
         game.floorsArr.forEach(rock => {
             const rockRect = rock.domElement.getBoundingClientRect()
             const lemmingRect = this.domElement.getBoundingClientRect()
-            if ((this.top + this.height) > (100 - (rock.bottom + rock.height)) && this.top < rock.bottom) {
+            if ((this.top + this.height) > (100 - (rock.bottom + rock.height)) && this.top < (100 - rock.bottom)) {
                 if (this.direction === 'right') {
                     const spaceFront = rock.left - (this.left + this.width)
                     if(spaceFront < 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
@@ -1137,18 +1162,27 @@ class Lemming {
     willBeInVoid() {
         const floorBelow = this.willCollideFloor()
         if (floorBelow) {
-            if (this.direction === 'right') {
-                const spaceFront = (floorBelow.left + floorBelow.width) - this.left
-                if(spaceFront <= 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
-                    return true
-                } else return false
-            } else if (this.direction === 'left') {
-                const spaceFront = (this.left + this.width) - floorBelow.left
-                if(spaceFront <= 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
-                    return true
-                } else return false
-            }
-        } else return false
+            if ((100 - (floorBelow.bottom + floorBelow.height)) === (this.top + this.height)) {
+                if (this.direction === 'right') {
+                    const spaceFront = (floorBelow.left + floorBelow.width) - this.left
+                    if(spaceFront <= 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
+                        return true
+                    } else return false
+                } else if (this.direction === 'left') {
+                    const spaceFront = (this.left + this.width) - floorBelow.left
+                    if(spaceFront <= 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
+                        return true
+                    } else return false
+                }
+            } else return false
+        } else return true
+    }
+
+    isInVoid() {
+        const floorBelow = this.willCollideFloor()
+        if (floorBelow) {
+            return (this.top + this.height) < (100 - (floorBelow.bottom + floorBelow.height))
+        } else return true
     }
     
     hasReachedExit() {

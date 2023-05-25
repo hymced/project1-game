@@ -40,13 +40,13 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 
 # To do (priority descending)
 
+- clean code for last commit / clean README.md
 - use gif v6 for walk left instead of buggy css transform
 - add floor obstacles
 - add lava floor
 - add umbrella skill
 - change `%` to `vw`
 - finish to implement player and re-enable it?
-- bug when bomb when thre is already no floor below
 - find better solution to workaround for restart gif anim
 - fix `FIX` when needed
 - fix typo in old commit message
@@ -148,3 +148,6 @@ Notes
 Lemmings gifs colors
 - Green #00FF00
 - Blue #0000FF
+
+CTRL+SHIFT+O in Chrome Dev Tools > Sources to go to a symbol 🤯
+conditionnal breakpoint: right click on line number in Sources
