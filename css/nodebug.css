@@ -1,5 +1,4 @@
 
-.walk, .fall, .block, .bomb {
+.walk, .fall, .block, .bomb, .explosion {
     background-color: initial !important;
 }
-

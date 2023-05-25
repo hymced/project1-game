@@ -23,6 +23,8 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 
 [playthrought (DOS)](https://www.youtube.com/watch?v=xIuxB1oR2WQ )
 
+[jslems web clone](http://funhtml5games.com/jslems/lemms.php)
+
 <!-- ![lemming-gif-alt-text](https://i.gifer.com/80rm.gif) -->
 <!-- <img src="https://i.gifer.com/80rm.gif"> -->
 
@@ -45,9 +47,11 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 - change `%` to `vw`
 - finish to implement player and re-enable it?
 - bug when bomb when thre is already no floor below
-- find better solution to workaround for restartGifAnim()
+- find better solution to workaround for restart gif anim
 - fix `FIX` when needed
 - fix typo in old commit message
+- fix spawn so it auto corrects its timeout delay based on how low before the alert is discarded (save time before and after)
+- in Chrome Dev Tools > Elements > div.walk > img > flex: 1 0 auto; appears (even if not enabled) while commented out in css! weird... (browser cache issue?)
 
 <br>
 

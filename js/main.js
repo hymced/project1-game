@@ -879,12 +879,28 @@ class Lemming {
         // https://stackoverflow.com/questions/10730212/proper-way-to-reset-a-gif-animation-with-displaynone-on-chrome
         // restartGifAnimTimeout(this.domElement.firstChild) // restarts all not each separately!
         // ---
+        // base64String + promises + FileReader:readAsDataURL()
+        // https://stackoverflow.com/questions/10730212/proper-way-to-reset-a-gif-animation-with-displaynone-on-chrome
+        // ---
+        // also tested forced redraw/paint with offsetHeight or setting a temp transparent 1px base64 image
+        // ---
         this.explodeTimeout(1000)
         clearInterval(this.intervalId)
         this.intervalId = null
         // this.intervalId = setTimeout(this.remove.bind(this), 2000) 
         // needs explicit binding, otherwise this context references window (free function invocation of a declared non-anonymous function), 
         // setTimeout is weird in this case, it should perform a method call, not a free function invocation, so no idea how it calls the callback function provided, maybe callbackName.bind(window)() by default?...
+        //      in fact MDN documentation says about it
+        //      https://developer.mozilla.org/en-US/docs/Web/API/setTimeout
+        //      The "this" problem
+        //      When you pass a method to setTimeout(), it will be invoked with a this value that may differ from your expectation. The general issue is explained in detail in the JavaScript reference.
+        //      https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/this#callbacks
+        //      Code executed by setTimeout() is called from an execution context separate from the function from which setTimeout was called. The usual rules for setting the this keyword for the called function apply, and if you have not set this in the call or with bind, it will default to the window (or global) object. It will not be the same as the this value for the function that called setTimeout.
+        //      Solutions: use a wrapper function or explicit bind
+        //      A common way to solve the problem is to use a wrapper function that sets this to the required value:
+        //          setTimeout(function () {
+        //              myArray.myMethod();
+        //          }, 2.0 * 1000);
         this.intervalId = setTimeout(() => {
             const floorBelow = this.willCollideFloor()
             // if (floorBelow instanceof Floor) // a Ground instance returns true
@@ -897,6 +913,8 @@ class Lemming {
 
     explodeTimeout(delay) {
         setTimeout(() => {
+            this.state = 'explosion'
+            this.domElement.classList.replace('bomb', 'explosion')
             const urlImage = "./images/lemming gifs v5 consolidated/lemming-explosion-2.gif"
             // this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-explosion-2-anim.gif">`;
             this.domElement.innerHTML = `<img src="${urlImage}?a=${Math.random()}" alt="lemming-explosion-2-anim.gif">`;
