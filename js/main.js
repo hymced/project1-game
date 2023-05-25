@@ -80,6 +80,7 @@ class Game {
         this.floorsArr.push(this.createGround())
         this.exit = new Exit()
         this.floorsArr.push(this.createFloor())
+        this.floorsArr.push(this.createFloor(30, 10, 1, 60))
         this.floorsArr.push(this.createRock())
         this.attachEventListeners()
 
@@ -274,11 +275,11 @@ class Game {
         //     setTimeout(function callback() {
         //         if (this.lemmingsArr.length < this.settings.lemmingsMax) {
         //             this.lemmingsArr.push(this.spawnLemming())
-        //             recursiveFunctionTimeout.bind(this)() 
+        //             recursiveFunctionTimeout.bind(this)()
         //         }
-        //     }.bind(this), 1000) 
+        //     }.bind(this), 1000)
         // }
-        // recursiveFunctionTimeout.bind(this)() 
+        // recursiveFunctionTimeout.bind(this)()
         //
         // EXAMPLE 4
         // /!\ there is also a global variable window.self! (which is refered by a standalone self in another self variable is not declared down in the scope chain...)
@@ -303,7 +304,7 @@ class Game {
         // EXAMPLE 8
         // function recursiveMethodsetTimeout2() {
         //     // setTimeout(callback = () => { // this function expression syntax to assign an anonymous arrow function to a variable exists (assignment expression), but not valid for the setTimeout callback argument (named functionRef in MDN)
-        //     // (assignment expression is valid for the initialization expression of a for loop for example...)            
+        //     // (assignment expression is valid for the initialization expression of a for loop for example...)
         //     setTimeout(function callback() { 
         //         if (this.lemmingsArr.length < this.settings.lemmingsMax) {
         //             this.lemmingsArr.push(this.spawnLemming())
@@ -388,8 +389,44 @@ class Game {
         return ground
     }
 
-    createFloor() {
-        const floor = new Floor()
+    createFloor(bottom, left, height, width) {
+        // ---
+        // https://stackoverflow.com/questions/32518615/skip-arguments-in-a-javascript-function
+        // Such:
+        // foo(undefined, undefined, undefined, undefined, undefined, arg1, arg2);
+        // .is equal to:
+        // foo(...Array(5), arg1, arg2);
+        // .or:
+        // foo(...[,,,,,], arg1, arg2);
+        // Such:
+        // foo(undefined, arg1, arg2);
+        // .is equal to:
+        // foo(...Array(1), arg1, arg2);
+        // .or:
+        // foo(...[,], arg1, arg2);
+        // Such:
+        // foo(arg1, arg2);
+        // .is equal to:
+        // foo(...Array(0), arg1, arg2);
+        // .or:
+        // foo(...[], arg1, arg2);
+        // ---
+        // const floor = new Floor(bottom === undefined ?  : bottom, left, height, width)
+        // not possible to skip exprIfTrue in ternary operator
+        // not possible to use a spread empty array `...Array(0)` to trick it as for a function argument
+        // (indeed spread can only be used where arguments are expected, and its not a valid expression in other cases)
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Spread_syntax
+        // The spread (...) syntax allows an iterable, such as an array or string, to be expanded in places where zero or more arguments (for function calls) or elements (for array literals) are expected.
+        // In an object literal, the spread syntax enumerates the properties of an object and adds the key-value pairs to the object being created.
+        // In a way, spread syntax is the opposite of rest syntax: example definition: function myFunction(...theArgs) {}
+        // note: object literals are not interable (plain objects that lack a Symbol.iterator method), so the spear operator cannot be used
+        // ---
+        // note: myFunction(a, , c) is not a valid syntax for invoking a function
+        // ---
+        // function myFunction(a = 1, b = 2) {}
+        // default function parameters allow named parameters to be initialized with default values if no value or undefined is passed.
+        // ---
+        const floor = new Floor(bottom, left, height, width)
         return floor
     }
 
@@ -547,16 +584,22 @@ class Player {
 /*********/
 
 class Floor {
-    constructor() {
+    constructor(bottom = 50, left = 40, height = 1, width = 50) {
 
         /**********************/
         /* Floor > properties */
         /**********************/
 
-        this.width = 50
-        this.height = 1
-        this.bottom = 50
-        this.left = 40
+        // this.bottom = 50
+        // this.left = 40
+        // this.height = 1
+        // this.width = 50
+// constructor(bottom, left, height, width) {
+//        if (arguments.length === 4) Object.assign(this, {bottom: bottom, left: left, height: height, width: width})
+//        else Object.assign(this, {bottom: 50, left: 40, height: 1, width: 50}) // if any is undefined, use defaults
+//        // NO! undefined counts as an arg!
+        Object.assign(this, {bottom: bottom, left: left, height: height, width: width})
+
         this.domElement = null
 
         /****************/
@@ -591,12 +634,8 @@ class Floor {
 
     break(breakPosStart, breakPosEnd) {
         if(breakPosStart > this.left && breakPosEnd < this.left + this.width) { // floorPart2 needed
-            const floorPart2 = game.createFloor()
+            const floorPart2 = game.createFloor(this.bottom, breakPosEnd, this.height, this.left + this.width - breakPosEnd)
             game.floorsArr.push(floorPart2)
-            floorPart2.left = breakPosEnd
-            floorPart2.domElement.style.left = floorPart2.left + "%"
-            floorPart2.width = this.left + this.width - breakPosEnd
-            floorPart2.domElement.style.width = floorPart2.width + "%"
             // floorPart1 (after floorPart2 because I need the dimensions in floorPart2 before changing them below, avoiding new variables...)
             this.width = breakPosStart - this.left
             this.domElement.style.width = this.width + "%"
@@ -620,7 +659,7 @@ class Floor {
 /**********/
 
 class Ground extends Floor {
-    constructor() {
+    constructor(bottom, left, height, width) {
         super()
 
         /***********************/
@@ -628,10 +667,10 @@ class Ground extends Floor {
         /***********************/
 
         // OVERRIDES
-        this.width = 50
-        this.height = 5
         this.bottom = 0
         this.left = 10
+        this.height = 5
+        this.width = 50
 
         /*****************/
         /* Ground > init */
@@ -662,10 +701,10 @@ class Rock extends Floor {
         /*********************/
 
         // OVERRIDES
-        this.width = 5
-        this.height = 5
         this.bottom = 51
         this.left = 45
+        this.height = 5
+        this.width = 5
 
         /***************/
         /* Rock > init */
@@ -694,10 +733,11 @@ class Exit {
         /* Exit > properties */
         /**********************/
 
-        this.width = 5
-        this.height = 5
         this.bottom = game.floorsArr[0].bottom + game.floorsArr[0].height
         this.left = 50
+        this.height = 5
+        this.width = 5
+        
         this.domElement = null
 
         /***************/
