@@ -80,6 +80,7 @@ class Game {
         this.floorsArr.push(this.createGround())
         this.exit = new Exit()
         this.floorsArr.push(this.createFloor())
+        this.floorsArr.push(this.createRock())
         this.attachEventListeners()
 
         // 
@@ -103,18 +104,18 @@ class Game {
         // # {START} NOTES: CLOSURES
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
         // # Lexical scoping
-        // Lexical scoping describes how a parser resolves variable names when functions are nested. 
-        // The word lexical refers to the fact that lexical scoping uses the location where a variable is declared within the source code to determine where that variable is available. 
+        // Lexical scoping describes how a parser resolves variable names when functions are nested.
+        // The word lexical refers to the fact that lexical scoping uses the location where a variable is declared within the source code to determine where that variable is available.
         // Nested functions have access to variables declared in their outer scope.
         // In this case, the scope is called a function scope, because the variable is accessible and only accessible within the function body where it's declared.
-        // Traditionally (before ES6), JavaScript only had two kinds of scopes: function scope and global scope. 
-        // Variables declared with var are either function-scoped or global-scoped, depending on whether they are declared within a function or outside a function. 
+        // Traditionally (before ES6), JavaScript only had two kinds of scopes: function scope and global scope.
+        // Variables declared with var are either function-scoped or global-scoped, depending on whether they are declared within a function or outside a function.
         // This can be tricky, because blocks with curly braces do not create scopes
         // In ES6, JavaScript introduced the let and const declarations, which, among other things like temporal dead zones, allow you to create block-scoped variables.
         // # Closure
-        // A closure is the combination of a function and the lexical environment within which that function was declared. 
+        // A closure is the combination of a function and the lexical environment within which that function was declared.
         // This environment consists of any local variables that were in-scope at the time the closure was created
-        // It needs a reference to an instance of an inner/bundled/enclosed function created when its outer function is run. 
+        // It needs a reference to an instance of an inner/bundled/enclosed function created when its outer function is run.
         // This instance maintains a reference to its lexical environment, within which the variable name exists.
         // # Emulating private methods with closures
         // Languages such as Java allow you to declare methods as private, meaning that they can be called only by other methods in the same class
@@ -145,11 +146,11 @@ class Game {
         // counter.decrement();
         // console.log(counter.value()); // 1
         // In previous examples, each closure had its own lexical environment. Here though, there is a single lexical environment that is shared by the three functions: counter.increment, counter.decrement, and counter.value.
-        // The shared lexical environment is created in the body of an anonymous function, which is executed as soon as it has been defined (also known as an IIFE). 
-        // The lexical environment contains two private items: a variable called privateCounter, and a function called changeBy. 
+        // The shared lexical environment is created in the body of an anonymous function, which is executed as soon as it has been defined (also known as an IIFE).
+        // The lexical environment contains two private items: a variable called privateCounter, and a function called changeBy.
         // You can't access either of these private members from outside the anonymous function. Instead, you can access them using the three public functions that are returned from the anonymous wrapper.
         // Those three public functions form closures that share the same lexical environment. Thanks to JavaScript's lexical scoping, they each have access to the privateCounter variable and the changeBy function.
-        // Notice how the two counters maintain their independence from one another. Each closure references a different version of the privateCounter variable through its own closure. 
+        // Notice how the two counters maintain their independence from one another. Each closure references a different version of the privateCounter variable through its own closure.
         // Each time one of the counters is called, its lexical environment changes by changing the value of this variable. Changes to the variable value in one closure don't affect the value in the other closure.
         // # Closure scope chain
         // Every closure has three scopes:
@@ -383,13 +384,18 @@ class Game {
     */
 
     createGround() {
-        const ground = new Ground()        
+        const ground = new Ground()
         return ground
     }
 
     createFloor() {
-        const floor = new Floor()        
+        const floor = new Floor()
         return floor
+    }
+
+    createRock() {
+        const rock = new Rock()
+        return rock
     }
 
     spawnLemming() {
@@ -467,7 +473,7 @@ class Game {
         })
         /* // player DISABLED FOR NOW
         if (this.player) {
-            document.addEventListener("mousemove", eventMouseMove => {            
+            document.addEventListener("mousemove", eventMouseMove => {
                 game.player.left = eventMouseMove.clientX - this.player.widthPx / 2
                 game.player.top = eventMouseMove.clientY - this.player.heightPx / 2
                 
@@ -507,7 +513,7 @@ class Player {
         const playerRect = this.domElement.getBoundingClientRect()
         
         this.widthPx = playerRect.right - playerRect.left
-        this.heightPx = playerRect.bottom - playerRect.top    
+        this.heightPx = playerRect.bottom - playerRect.top
          
     }
 
@@ -644,6 +650,40 @@ class Ground extends Floor {
 }
 
 /********/
+/* Rock */
+/********/
+
+class Rock extends Floor {
+    constructor() {
+        super()
+
+        /*********************/
+        /* Rock > properties */
+        /*********************/
+
+        // OVERRIDES
+        this.width = 5
+        this.height = 5
+        this.bottom = 51
+        this.left = 45
+
+        /***************/
+        /* Rock > init */
+        /***************/
+
+        this.domElement.remove()
+        this.domElement = null
+        this.domElement = super.createDomElement()
+        this.domElement.classList.replace('floor', 'rock')
+    }
+
+    /******************/
+    /* Rock > methods */
+    /******************/
+
+}
+
+/********/
 /* Exit */
 /********/
 
@@ -771,16 +811,16 @@ class Lemming {
             }
         } else {
             // this.top = round(
-            //     floorBelow.domElement.offsetTop / game.boardDomElement.clientHeight * 100 - this.height, 
+            //     floorBelow.domElement.offsetTop / game.boardDomElement.clientHeight * 100 - this.height,
             //     1) // not precise enough because offsetTop is already a rounded value
             // this.top = round(
-            //     floorBelow.domElement.getBoundingClientRect().top / game.boardDomElement.getBoundingClientRect().height * 100 - this.height, 
+            //     floorBelow.domElement.getBoundingClientRect().top / game.boardDomElement.getBoundingClientRect().height * 100 - this.height,
             //     1) // better precision with subpixel values
             this.top = (100 - floorBelow.bottom) - floorBelow.height - this.height // (100 - bottom) to revert Y axis
             this.domElement.style.top = this.top + "%"
             clearInterval(this.intervalId)
             this.intervalId = null
-            this.walk()                
+            this.walk()
         }
         if (this.isOut()) this.remove()
         }, 100)
@@ -795,13 +835,14 @@ class Lemming {
             const blockerFront = this.willCollideBlocker()
             const voidFront = this.willBeInVoid()
             const exitFront = this.willExit()
-            if (!blockerFront && !voidFront && !exitFront) {  
+            const rockFront = this.willCollideRock()
+            if (!blockerFront && !voidFront && !exitFront && !rockFront) {
                 if (this.direction === 'right') {
-                    if ([...this.domElement.firstChild.classList].indexOf('flip') !== -1) 
+                    if ([...this.domElement.firstChild.classList].indexOf('flip') !== -1)
                         this.domElement.firstChild.classList.remove("flip")
                     this.left += 1 * game.settings.speedFactorWalk
                 } else if (this.direction === 'left') {
-                    if ([...this.domElement.firstChild.classList].indexOf('flip') === -1) 
+                    if ([...this.domElement.firstChild.classList].indexOf('flip') === -1)
                         this.domElement.firstChild.classList.add("flip")
                     this.left -= 1 * game.settings.speedFactorWalk
                 }
@@ -835,7 +876,18 @@ class Lemming {
                 clearInterval(this.intervalId)
                 this.intervalId = null
                 this.exit()
-            }
+            } else if (rockFront) {
+                if (this.direction === 'right') {
+                    this.direction = 'left'
+                    this.left = rockFront.left - this.width
+                    this.domElement.style.left = this.left + "%"
+                }
+                else if (this.direction === 'left') {
+                    this.direction = 'right'
+                    this.left = rockFront.left + rockFront.width
+                    this.domElement.style.left = this.left + "%"
+                }
+            } 
             if (this.isOut()) this.remove()
         }, 100)
     }
@@ -945,7 +997,7 @@ class Lemming {
         if (game.isEnd()) game.end()
     }
 
-    isOut() {               
+    isOut() {
         if (
             this.top >= 100 || 
             this.left >= 100 || 
@@ -979,12 +1031,12 @@ class Lemming {
     }
 
     // REMINDER: floors have bottom set, but not top
-    willCollideFloor() {
+    willCollideFloor() { // also works to detect rock below lemming
         const boardRect = game.boardDomElement.getBoundingClientRect()
         let floorBelow = null
         game.floorsArr.forEach(floor => {
-            const floorRect = floor.domElement.getBoundingClientRect() 
-            const lemmingRect = this.domElement.getBoundingClientRect() 
+            const floorRect = floor.domElement.getBoundingClientRect()
+            const lemmingRect = this.domElement.getBoundingClientRect()
             const spaceBelow = floorRect.top - lemmingRect.bottom
             if ((this.left + this.width) > floor.left && this.left < (floor.left + floor.width)) {
                 if(spaceBelow / boardRect.height * 100 < 1 * game.settings.speedFactorFall && spaceBelow >= 0) { // 1 to anticipate other values for freefall or walk speed in game settings
@@ -1018,6 +1070,30 @@ class Lemming {
         else return blockerFront
     }
 
+    willCollideRock() { // also works to detect floor in front of lemming
+        const boardRect = game.boardDomElement.getBoundingClientRect()
+        let rockFront = null
+        game.floorsArr.forEach(rock => {
+            const rockRect = rock.domElement.getBoundingClientRect()
+            const lemmingRect = this.domElement.getBoundingClientRect()
+            if ((this.top + this.height) > (100 - (rock.bottom + rock.height)) && this.top < rock.bottom) {
+                if (this.direction === 'right') {
+                    const spaceFront = rock.left - (this.left + this.width)
+                    if(spaceFront < 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
+                        rockFront = rock
+                    }
+                } else if (this.direction === 'left') {
+                    const spaceFront = this.left - (rock.left + rock.width)
+                    if(spaceFront < 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
+                        rockFront = rock
+                    }
+                }
+            }
+        })
+        if (rockFront === null) return false
+        else return rockFront
+    }
+
     willBeInVoid() {
         const floorBelow = this.willCollideFloor()
         if (floorBelow) {
@@ -1043,7 +1119,7 @@ class Lemming {
     }
 
     willExit() {
-        if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height))) { // lemming must be entirely within exit vertical bounderies (border width included with box-sizing: border-box;)     
+        if ((this.top + this.height) <= (100 - game.exit.bottom) && this.top >= (100 - (game.exit.bottom + game.exit.height))) { // lemming must be entirely within exit vertical bounderies (border width included with box-sizing: border-box;)
             if (this.direction === 'right') {
                 const spaceFront = (game.exit.left + game.exit.width / 2) - (this.left + this.width / 2) // lemming must reach the center of exit
                 if(spaceFront < 1 * game.settings.speedFactorWalk && spaceFront >= 0) {
@@ -1119,16 +1195,16 @@ function round(float, digits) {
 
 // does not work
 // chatGPT suggests to listen for the img onload event
-function restartGifAnim(imgDomElement){ 
+function restartGifAnim(imgDomElement){
     let imgSrc = imgDomElement.src;
     imgDomElement.src = ""
-    imgDomElement.src = imgSrc; 
+    imgDomElement.src = imgSrc;
 }
 
 function restartGifAnimTimeout(imgDomElement){
-    let imgSrc = imgDomElement.src; 
+    let imgSrc = imgDomElement.src;
     imgDomElement.src = ""
     setTimeout(() => {
-        imgDomElement.src = imgSrc; 
+        imgDomElement.src = imgSrc;
     }, 0)
 }
