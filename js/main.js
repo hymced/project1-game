@@ -956,7 +956,7 @@ class Lemming {
         this.intervalId = setTimeout(() => {
             const floorBelow = this.willCollideFloor()
             // if (floorBelow instanceof Floor) // a Ground instance returns true
-            if (!(floorBelow instanceof Ground)) // to disable ground breaking
+            if (!(floorBelow instanceof Ground || floorBelow instanceof Rock)) // to disable ground and rock breaking
                 floorBelow.break(this.left, this.left + this.width)
             // this.remove() // ok, default binding to this context
             setTimeout(this.remove.bind(this), 2000)
