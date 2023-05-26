@@ -14,6 +14,19 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 &nbsp;
 
 ---
+## Rules to play
+
+Welcome to Lemming's world!
+
+Your goal is to have at least 60 % of lemmings **IN** the **EXIT** at the bottom.
+
+Click on them to activate their **skills**!
+
+Pssst...! You have all the time in the world, the game will finish only when there are no more lemmings **OUT**...
+
+&nbsp;
+
+---
 ## To do (priority descending)
 
 - clean code for last commit / clean README.md
@@ -52,7 +65,7 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 &nbsp;
 
 ---
-Notes
+##Notes
 
 Lemmings gifs colors
 - Green #00FF00

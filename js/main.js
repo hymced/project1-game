@@ -1245,13 +1245,13 @@ function alertTimeout(text) {
 }
 const rules = `
     Welcome to Lemming's world!
-    
+
     Your goal is to have at least ${Math.floor(game.settings.scoreInMin / game.settings.lemmingsMax * 100)} % of lemmings **IN** the **EXIT** at the bottom.
 
     Click on them to activate their **skills**!
 
-    Pssst...! You have all the time in the world, the game will finish only when there is no more lemmings **OUT**...
-` 
+    Pssst...! You have all the time in the world, the game will finish only when there are no more lemmings **OUT**...
+`
 // multi line strings is possible only with backticks (template literals)
 // alertTimeout(rules); 
 // FIX: if user is too long to dismiss the alert, lemmings are spawned simultaneously
