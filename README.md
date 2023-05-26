@@ -27,6 +27,20 @@ Pssst...! You have all the time in the world, the game will finish only when the
 &nbsp;
 
 ---
+## Deployment on GitHub Pages
+
+https://hymced.github.io/project1-game/
+
+&nbsp;
+
+---
+## Presentation
+
+https://docs.google.com/presentation/d/1wbm5zpFXnM-qNleqgiKNyaWB-fGsIWBc0VPFiXVkKaQ/
+
+&nbsp;
+
+---
 ## To do (priority descending)
 
 - clean code for last commit / clean README.md
@@ -44,64 +58,6 @@ Pssst...! You have all the time in the world, the game will finish only when the
 - fix `FIX` when needed
 - finish to implement player and re-enable it?
 - change `%` to `vw`
-
-<br>
-
-- [x] deploy online using GitHub Pages
-- [ ] Stick with KISS (Keep It Simple Stupid) and DRY (Don’t Repeat Yourself) principles...
-
-<br>
-
-> - test subpixel rounding vs getBoundingClientRect() subpixel values
-> - subpixel values from getBoundingClientRect() looks like a conversion using points...
-
-&nbsp; <!-- empty HTML comment does not work --> <!-- <br> --> <!-- <br /> --> <!-- &nbsp; bigger space than br --> 
-
----
-## Questions
-1. new spec but impossible to do without refactoring all code, is it normal?
-2. navigate code by symbols in Chrome Debug Tools > Sources like in GitHub?
-3. Chrome debugging possible to change variables value live?
-
-&nbsp;
-
----
-## Notes
-
-Lemmings gifs colors
-- Green #00FF00
-- Blue #0000FF
-
-<br>
-
-CTRL+SHIFT+O in Chrome Dev Tools > Sources to go to a symbol 🤯  
-
-conditionnal breakpoint: right click on line number in Sources
-
-```js
-var g = 1
-```
-
-&nbsp;
-
----
-## Directory Tree
-
-`git ls-tree --name-only -r  master`
-
-* [README.md](README.md)
-* [index.html](index.html)
-* [gameover.html](gameover.html)
-* [js](js)
-    - [main.js](js/main.js)
-* [css](css)
-    - [nodebug.css](css/nodebug.css)
-    - [styles.css](css/styles.css)
-* [images](images)
-    - [ideas](images/ideas)
-    - [lemming gifs v1](images/lemming%20gifs%20v1)
-    - [lemming gifs v2](images/lemming%20gifs%20v2)
-        - ?
 
 &nbsp;
 
@@ -128,42 +84,3 @@ https://kkatlas.wordpress.com/2015/08/31/game-review-lemmings/
 https://i0.wp.com/cdn.duelinganalogs.com/wp-content/uploads/2013/05/lemmings-animated.gif?zoom=2  
 https://i0.wp.com/l.j-factor.com/gifs/Lemmings-OnlyFloatersCanSurviveThis.gif?zoom=2  
 https://www.deviantart.com/lechuckie/art/lemming-stop-18883716  
-
-&nbsp;
-
----
-## Presentation
-
-### Format
-- Talking with Slides: 3 minutes
-- Demo: 2 minutes
-- Total: 5 minutes
-
-All presentations will be done from a staff member’s computer, so your slides need to be online.  
-https://www.google.com/slides/about/  
-https://docs.google.com/presentation/u/0/  
-
-## Presentation Structure
-1.	Title Slide (1 slide): your project’s name & your name
-2.	About Me (1-2 slides):
-    - Where are you from?
-    - What are some interesting facts about you? (hobbies, travels, etc.)
-3.	Project Elevator Pitch (1-2 slides):
-    - What is your project?
-    - How does it work?
-    - Why did you choose it?
-4.	Technical Challenge (1-2 slides):
-    - What was the most important technical challenge you faced?
-    - How did you overcome that challenge?
-5.	Big Mistake (1-2 slides):
-    - What was the biggest mistake you made during this project?
-    - What did you learn from it?
-6.	Demo Slide (1 slide): literally says “DEMO” with a link to your project so you can open it easily
-7.	Closing Slide (1 slide): your project’s name, your name & a “Thank You”
-8.	Total: 7-11 slides
-
-### Presentation Structure Notes
-- Don’t include a slide just for the technologies.
-- Don’t include any code in your slides. Nobody will read it.
-- Don’t include a slide for GitHub graphs.
-- If you think that deviating from the structure improves your presentation, feel free to do so. This suggested structure is mostly for people who don’t know what to do.
