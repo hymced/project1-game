@@ -30,9 +30,10 @@ class Game {
         this.settings.lemmingsMax = 20
         this.settings.spawnDelay = 2000
         this.settings.speedFactorWalk = 0.25
-        this.settings.speedFactorFall = 1.5
+        this.settings.speedFactorFall = 1 // 1.5 closer to the original, but difficult to click to activate skills without the Player class...
         this.settings.scoreInMin = 12 // 60 %
         this.settings.disableDebugMode = true
+        this.settings.iterationsMaxFallingNoSplash = 20
 
     }
 
@@ -525,7 +526,10 @@ class Game {
                     lemming.intervalId = 0
                     lemming.bomb()
                 } else if (lemming.state === 'fall') {
-                    console.log("lemming has no skill when falling! maybe it will have an umbrella one day...")
+                    clearInterval(lemming.intervalId)
+                    lemming.intervalId = 0
+                    lemming.umbrella = true
+                    lemming.umbrellaFall()
                 }
             } else console.log("lemming missed!")
         })
@@ -788,7 +792,7 @@ class Exit {
         // this simplify the calculation of the center of the exit (border width is included in height/width sizing dimensions)
         // default box-sizing: content-box;
 
-        const urlImage = "./images/in-out/exit.gif"
+        const urlImage = "./images/in-out v2/exit.gif"
         exitDomElement.innerHTML = `<img src="${urlImage}" alt="lemming-exit-anim">`;
 
         const boardDomElement = document.getElementById("board")
@@ -825,6 +829,7 @@ class Lemming {
         this.left = this.left - this.width / 2
         this.domElement = this.createDomElement()
         this.fall() // all lemmings appear falling out of the hatch
+        this.umbrella = false
     }
     
     /*********************/
@@ -862,45 +867,65 @@ class Lemming {
         else this.domElement.classList.replace('walk', 'fall')
         const urlImage = "./images/lemming gifs v5 consolidated/lemming-fall-anim.gif"
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-fall-anim.gif">`;
+        this.iterationsFalling = 0
         this.intervalId = setInterval(() => {
-        const floorBelow = this.willCollideFloor()
-        const exitBelow = this.hasReachedExit()
-        if (!floorBelow) {
-            this.top += 1 * game.settings.speedFactorFall
-            this.domElement.style.top = this.top + "%"
-            if (exitBelow) { // will walk towards it after reaching the floor
-                if (this.isRightOfExit())
-                    this.direction = 'left'
-                else this.direction = 'right'
+            ++this.iterationsFalling
+            const floorBelow = this.willCollideFloor()
+            const exitBelow = this.hasReachedExit()
+            const splashBelow = this.willSplash() && floorBelow
+            const umbrellaReady = this.hasUmbrella()
+            if (!floorBelow && !splashBelow) {
+                if (!umbrellaReady) {
+                    this.top += 1 * game.settings.speedFactorFall
+                    this.domElement.style.top = this.top + "%"
+                    if (exitBelow) { // will walk towards it after reaching the floor
+                        if (this.isRightOfExit())
+                            this.direction = 'left'
+                        else this.direction = 'right'
+                    }
+                } else if (umbrellaReady) {
+                    clearInterval(this.intervalId)
+                    this.intervalId = null
+                    this.umbrellaFall()
+                }
+            } else if (splashBelow && !umbrellaReady) {
+                this.top = (100 - floorBelow.bottom) - floorBelow.height - this.height // (100 - bottom) to revert Y axis
+                this.domElement.style.top = this.top + "%"
+                clearInterval(this.intervalId)
+                this.intervalId = null
+                this.splash()
+            } else {
+                // this.top = round(
+                //     floorBelow.domElement.offsetTop / game.boardDomElement.clientHeight * 100 - this.height,
+                //     1) // not precise enough because offsetTop is already a rounded value
+                // this.top = round(
+                //     floorBelow.domElement.getBoundingClientRect().top / game.boardDomElement.getBoundingClientRect().height * 100 - this.height,
+                //     1) // better precision with subpixel values
+                this.top = (100 - floorBelow.bottom) - floorBelow.height - this.height // (100 - bottom) to revert Y axis
+                this.domElement.style.top = this.top + "%"
+                clearInterval(this.intervalId)
+                this.intervalId = null
+                this.walk()
             }
-        } else {
-            // this.top = round(
-            //     floorBelow.domElement.offsetTop / game.boardDomElement.clientHeight * 100 - this.height,
-            //     1) // not precise enough because offsetTop is already a rounded value
-            // this.top = round(
-            //     floorBelow.domElement.getBoundingClientRect().top / game.boardDomElement.getBoundingClientRect().height * 100 - this.height,
-            //     1) // better precision with subpixel values
-            this.top = (100 - floorBelow.bottom) - floorBelow.height - this.height // (100 - bottom) to revert Y axis
-            this.domElement.style.top = this.top + "%"
-            clearInterval(this.intervalId)
-            this.intervalId = null
-            this.walk()
-        }
-        if (this.isOut()) this.remove()
+            if (this.isOut()) this.remove()
         }, 100)
     }
 
     walk() {
         this.state = 'walk'
         this.domElement.classList.replace('fall', 'walk')
+        this.domElement.classList.replace('umbrella2', 'walk')
         const urlImage = "./images/lemming gifs v5 consolidated/lemming-walk-anim.gif"
         this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-walk-anim.gif">`;
+        this.iterationsFalling = 0
         this.intervalId = setInterval(() => {
             const blockerFront = this.willCollideBlocker()
             const voidFront = this.willBeInVoid()
             const exitFront = this.willExit()
             const rockFront = this.willCollideRock()
             const voidBelow = this.isInVoid()
+            const umbrellaReady = this.hasUmbrella()
+            const floorBelow = this.willCollideFloor()
             if (!blockerFront && !voidFront && !exitFront && !rockFront && !voidBelow) {
                 if (this.direction === 'right') {
                     if ([...this.domElement.firstChild.classList].indexOf('flip') !== -1)
@@ -932,7 +957,10 @@ class Lemming {
                 // (voidBelow = this.isInVoid()) && true
                 clearInterval(this.intervalId)
                 this.intervalId = null
-                this.fall()
+                // fix lemming stuck when floor breaks below all the width where the lemming will be at its next iteration
+                if (!floorBelow) {
+                    this.fall()
+                }
             } else if (voidFront) {
                 const floorBelow = this.willCollideFloor()
                 if (this.direction === 'right') {
@@ -944,7 +972,8 @@ class Lemming {
                 this.domElement.style.left = this.left + "%"
                 clearInterval(this.intervalId)
                 this.intervalId = null
-                this.fall()
+                if (!umbrellaReady) this.fall()
+                else this.umbrellaFall()
             } else if (exitFront) {
                 this.left = game.exit.left + game.exit.width / 2 - this.width / 2
                 this.domElement.style.left = this.left + "%"
@@ -1046,6 +1075,56 @@ class Lemming {
             // this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-explosion-2-anim.gif">`;
             this.domElement.innerHTML = `<img src="${urlImage}?a=${Math.random()}" alt="lemming-explosion-2-anim.gif">`;
         }, delay)
+    }
+
+    splash() {
+        this.state = 'splash'
+        this.domElement.classList.replace('fall', 'splash')
+        const urlImage = "./images/lemming gifs v5 consolidated/lemming-explosion-2.gif"
+        this.domElement.innerHTML = `<img src="${urlImage}?id=${this.id}"" alt="lemming-explosion-2-anim.gif">`;
+        clearInterval(this.intervalId)
+        this.intervalId = null
+        this.intervalId = setTimeout(this.remove.bind(this), 1000)
+    }
+
+    umbrellaOpen() {
+        this.state = 'umbrella1'
+        this.domElement.classList.replace('fall', 'umbrella2')
+        const urlImage = "./images/lemming gifs fall with umbrella/lemming-fall-opening-umbrella.gif.gif"
+        this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-umbrella1-anim.gif">`;
+        clearInterval(this.intervalId)
+        this.intervalId = null
+    }
+
+    umbrellaFall() {
+        this.state = 'umbrella2'
+        this.domElement.classList.replace('fall', 'umbrella2')
+        this.domElement.classList.replace('walk', 'umbrella2')
+        const urlImage = "./images/lemming gifs fall with umbrella/lemming-fall-umbrella.gif"
+        this.domElement.innerHTML = `<img src="${urlImage}" alt="lemming-umbrella2-anim.gif">`;
+        this.intervalId = setInterval(() => {
+            ++this.iterationsFalling
+            const floorBelow = this.willCollideFloor()
+            const exitBelow = this.hasReachedExit()
+            const splashBelow = this.willSplash() && floorBelow
+            const umbrellaReady = this.hasUmbrella() // should be always true here...
+            if (!floorBelow && !splashBelow) {
+                this.top += 1 * game.settings.speedFactorFall * 0.5
+                this.domElement.style.top = this.top + "%"
+                if (exitBelow) { // will walk towards it after reaching the floor
+                    if (this.isRightOfExit())
+                        this.direction = 'left'
+                    else this.direction = 'right'
+                }
+            } else {
+                this.top = (100 - floorBelow.bottom) - floorBelow.height - this.height
+                this.domElement.style.top = this.top + "%"
+                clearInterval(this.intervalId)
+                this.intervalId = null
+                this.walk()
+            }
+            if (this.isOut()) this.remove()
+        }, 100)
     }
 
     /****************************/
@@ -1222,6 +1301,14 @@ class Lemming {
 
     isRightOfExit() {
         return this.left + this.width / 2 > game.exit.left + game.exit.width / 2
+    }
+
+    willSplash() {
+        return this.iterationsFalling > game.settings.iterationsMaxFallingNoSplash / game.settings.speedFactorFall
+    }
+
+    hasUmbrella() {
+        return this.umbrella
     }
 
 }

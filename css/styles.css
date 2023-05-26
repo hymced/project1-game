@@ -176,6 +176,35 @@ body {
     bottom: 0px;
 }
 
+.splash {
+    background-color: red;
+    position: absolute;
+}
+.splash img {
+    width: 200%;
+    left: -50%;
+    height: auto;
+    object-fit: contain;
+    position: absolute;
+    bottom: 0px;
+}
+
+.umbrella2 {
+    background-color: rgb(200, 120, 0);
+    position: absolute;
+}
+.umbrella2 img {
+    /* width: 100%;  */
+    /* fix inconsistent lemming sizings in pictures manually: ratio lemming body width = 40px / 44px = 0.909090909 */
+    /* width: 90.9%; */
+    /* visually better: */
+    width: 80%;
+    height: auto;
+    object-fit: contain;
+    position: absolute;
+    bottom: 0px;
+}
+
 .floor {
     background-color: rgb(240, 240, 100);
     position: absolute;

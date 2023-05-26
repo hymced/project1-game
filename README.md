@@ -32,8 +32,9 @@ Pssst...! You have all the time in the world, the game will finish only when the
 - clean code for last commit / clean README.md
 - branch master-comments
 - final commit
-- add umbrella skill
 - add lava floor
+- umbrella1 (umbrellaOpen)
+- umbrella gifs anim a little bit bigger than the other
 - use gif v6 for walk left instead of buggy css transform
 - fix spawn so it auto corrects its timeout delay based on how low before the alert is discarded (save time before and after)
 - fix typo in old commit message
