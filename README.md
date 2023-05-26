@@ -1,29 +1,6 @@
-
-# Ideas
-
-- T-Rex run
-- Doodle Jump
-- Alex Kidd
-- Lemmings
-
-https://foxyofjungle.itch.io/lemmings-but-1-object  
-https://github.com/FoxyOfJungle/Lemmings_But_1_Obj  
-
-https://gifer.com/en/3QWz  
-https://scottishgames.net/2021/02/15/happy-birthday-lemmings-30-today/  
-http://www.boxedpixels.co.uk/2014/11/game-065-lemmings-2-tribes.html  
-https://tenor.com/view/space-bob-lemmings-1jps-gif-25383471  
-https://tenor.com/view/games-vintage-pixels-gif-9131396  
-https://kkatlas.wordpress.com/2015/08/31/game-review-lemmings/  
-https://i0.wp.com/cdn.duelinganalogs.com/wp-content/uploads/2013/05/lemmings-animated.gif?zoom=2  
-https://i0.wp.com/l.j-factor.com/gifs/Lemmings-OnlyFloatersCanSurviveThis.gif?zoom=2  
-https://www.deviantart.com/lechuckie/art/lemming-stop-18883716  
-
 https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong  
 
-[playthrought (DOS)](https://www.youtube.com/watch?v=xIuxB1oR2WQ )
-
-[jslems web clone](http://funhtml5games.com/jslems/lemms.php)
+# Project 1: Game - Lemmings (DOS) clone
 
 <!-- ![lemming-gif-alt-text](https://i.gifer.com/80rm.gif) -->
 <!-- <img src="https://i.gifer.com/80rm.gif"> -->
@@ -37,42 +14,36 @@ https://github.com/ironhack-loopey-tunes-may2023/oop-game-codealong
 &nbsp;
 
 ---
-
-# To do (priority descending)
+## To do (priority descending)
 
 - clean code for last commit / clean README.md
-- use gif v6 for walk left instead of buggy css transform
-- add floor obstacles
-- add lava floor
+- branch master-comments
+- final commit
 - add umbrella skill
-- change `%` to `vw`
-- finish to implement player and re-enable it?
+- add lava floor
+- use gif v6 for walk left instead of buggy css transform
+- fix spawn so it auto corrects its timeout delay based on how low before the alert is discarded (save time before and after)
+- fix typo in old commit message
+- add hatch dyn positioning is js (instead of manual calc in css)
+- in Chrome Dev Tools > Elements > div.walk > img > flex: 1 0 auto; appears (even if not enabled) while commented out in css! weird... (browser cache issue?)
 - find better solution to workaround for restart gif anim
 - fix `FIX` when needed
-- fix typo in old commit message
-- fix spawn so it auto corrects its timeout delay based on how low before the alert is discarded (save time before and after)
-- in Chrome Dev Tools > Elements > div.walk > img > flex: 1 0 auto; appears (even if not enabled) while commented out in css! weird... (browser cache issue?)
+- finish to implement player and re-enable it?
+- change `%` to `vw`
 
 <br>
 
-- deploy online using GitHub Pages
-- Stick with KISS (Keep It Simple Stupid) and DRY (Don’t Repeat Yourself) principles...
+- [x] deploy online using GitHub Pages
+- [ ] Stick with KISS (Keep It Simple Stupid) and DRY (Don’t Repeat Yourself) principles...
 
 <br>
-
-```js
-var g = 1
-```
 
 > - test subpixel rounding vs getBoundingClientRect() subpixel values
 > - subpixel values from getBoundingClientRect() looks like a conversion using points...
 
 &nbsp; <!-- empty HTML comment does not work --> <!-- <br> --> <!-- <br /> --> <!-- &nbsp; bigger space than br --> 
 
-- make presentation
-
-<br>
-
+---
 ## Questions
 1. new spec but impossible to do without refactoring all code, is it normal?
 2. navigate code by symbols in Chrome Debug Tools > Sources like in GitHub?
@@ -81,7 +52,25 @@ var g = 1
 &nbsp;
 
 ---
+Notes
 
+Lemmings gifs colors
+- Green #00FF00
+- Blue #0000FF
+
+<br>
+
+CTRL+SHIFT+O in Chrome Dev Tools > Sources to go to a symbol 🤯  
+
+conditionnal breakpoint: right click on line number in Sources
+
+```js
+var g = 1
+```
+
+&nbsp;
+
+---
 ## Directory Tree
 
 `git ls-tree --name-only -r  master`
@@ -103,10 +92,37 @@ var g = 1
 &nbsp;
 
 ---
+## Ideas / References
 
-# Presentation
+- T-Rex run (Chrome)
+- Doodle Jump (iOS)
+- Alex Kidd (Sega)
+- Lemmings (DOS)
+- Galcon (iOS)
 
-## Format
+[playthrought (DOS)](https://www.youtube.com/watch?v=xIuxB1oR2WQ )
+
+[jslems web clone](http://funhtml5games.com/jslems/lemms.php)
+
+https://foxyofjungle.itch.io/lemmings-but-1-object  
+https://github.com/FoxyOfJungle/Lemmings_But_1_Obj  
+
+https://gifer.com/en/3QWz  
+https://scottishgames.net/2021/02/15/happy-birthday-lemmings-30-today/  
+http://www.boxedpixels.co.uk/2014/11/game-065-lemmings-2-tribes.html  
+https://tenor.com/view/space-bob-lemmings-1jps-gif-25383471  
+https://tenor.com/view/games-vintage-pixels-gif-9131396  
+https://kkatlas.wordpress.com/2015/08/31/game-review-lemmings/  
+https://i0.wp.com/cdn.duelinganalogs.com/wp-content/uploads/2013/05/lemmings-animated.gif?zoom=2  
+https://i0.wp.com/l.j-factor.com/gifs/Lemmings-OnlyFloatersCanSurviveThis.gif?zoom=2  
+https://www.deviantart.com/lechuckie/art/lemming-stop-18883716  
+
+&nbsp;
+
+---
+## Presentation
+
+### Format
 - Talking with Slides: 3 minutes
 - Demo: 2 minutes
 - Total: 5 minutes
@@ -139,15 +155,3 @@ https://docs.google.com/presentation/u/0/
 - Don’t include any code in your slides. Nobody will read it.
 - Don’t include a slide for GitHub graphs.
 - If you think that deviating from the structure improves your presentation, feel free to do so. This suggested structure is mostly for people who don’t know what to do.
-
-&nbsp;
-
----
-Notes
-
-Lemmings gifs colors
-- Green #00FF00
-- Blue #0000FF
-
-CTRL+SHIFT+O in Chrome Dev Tools > Sources to go to a symbol 🤯
-conditionnal breakpoint: right click on line number in Sources

@@ -11,12 +11,16 @@ body {
 }
 
 #scores {
-    color: white;
+    color: rgb(0, 200, 0);
     font-family: sans-serif;
-    padding: 1%
+    padding: 0 1%;
+    position: absolute;
+    margin-left: 25vh;
+    margin-top: 15vh;
+    border: 2px solid rgb(0, 200, 0)
 }
 #scores p {
-    margin: 0.5em;
+    line-height: 0.5em;
 }
 
 .lemming {
@@ -24,7 +28,7 @@ body {
 }
 
 .walk {
-    background-color: rgb(0, 178, 0);
+    background-color: rgb(0, 200, 0);
     position: absolute;
 
     /* 
@@ -76,7 +80,7 @@ body {
     */
     width: 100%;
     height: auto; 
-    object-fit: contain; 
+    object-fit: contain;
     position: absolute;
     bottom: 0px;
 
@@ -124,24 +128,24 @@ body {
 } */
 
 .fall {
-    background-color: rgb(0, 178, 0);
+    background-color: rgb(200, 200, 0);
     position: absolute;
 }
 .fall img {
     width: 100%;
-    height: auto; 
+    height: auto;
     object-fit: contain;
     position: absolute;
     bottom: 0px;
 }
 
 .block {
-    background-color: rgb(65,65,227);
+    background-color: rgb(0,0,200);
     position: absolute;
 }
 .block img {
     width: 100%;
-    height: auto; 
+    height: auto;
     object-fit: contain;
     position: absolute;
     bottom: 0px;
@@ -153,8 +157,8 @@ body {
 }
 .bomb img {
     width: 100%;
-    height: auto; 
-    object-fit: contain; 
+    height: auto;
+    object-fit: contain;
     position: absolute;
     bottom: 0px;
 }
@@ -166,26 +170,125 @@ body {
 .explosion img {
     width: 200%;
     left: -50%;
-    height: auto; 
-    object-fit: contain; 
+    height: auto;
+    object-fit: contain;
     position: absolute;
     bottom: 0px;
 }
 
 .floor {
-    background-color: rgb(243, 243, 87);
+    background-color: rgb(240, 240, 100);
     position: absolute;
 }
 
 .ground {
-    background-color: rgb(243, 243, 87);
+    background-color: rgb(240, 240, 100);
     position: absolute;
 }
 
 .rock {
-    background-color: rgb(245, 180, 87);
+    background-color: rgb(200, 180, 150);
     position: absolute;
 }
+
+#exit {
+    position: absolute;
+}
+#exit img {
+    width: 180%;
+    left: -40%;
+    height: auto;
+    object-fit: contain;
+    position: absolute;
+    bottom: 0px;
+}
+
+#hatch {
+    top: 10%;
+    left: 47.5%; /* aligned with lemmings: Lemming.left - Lemming.width/2 */
+    height: 5%;
+    width: 5%;
+
+    position: absolute;
+}
+#hatch img {
+    width: 150%;
+    left: -25%;
+    height: auto;
+    object-fit: contain;
+    position: absolute;
+    bottom: 0px;
+}
+
+.field {
+    position: absolute;
+}
+
+.field#column-left {
+    left: 0;
+    height: 100vh;
+}
+.field#column-left img {
+    height: 100%;
+    object-fit: contain;
+}
+
+.field#column-right {
+    right: -55vh;
+    height: 100vh;
+}
+.field#column-right img {
+    height: 100%;
+    object-fit: contain;
+}
+
+.field#ornament-top-left {
+    top: 0;
+    left: 30vh;
+    height: 8vh;
+}
+.field#ornament-top-left img {
+    height: 100%;
+    object-fit: contain;
+}
+
+.field#ornament-top-right {
+    top: 0;
+    right: 20vh;
+    height: 8vh;
+}
+.field#ornament-top-right img {
+    height: 100%;
+    object-fit: contain;
+}
+
+.field#ground {
+    bottom: 0;
+    left: 15.5vh;
+    width: 112vh;
+}
+.field#ground img {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    object-fit: contain;
+}
+
+/* place the ground below the ground field part */
+/* method 1: place ground above everything else in stacking context (board) */
+/*
+.field#ground {
+    z-index: 1;
+}
+*/
+/* method 2: increase the default stacking order of divs in stack context, except the ground field part */
+#board div {
+    z-index: 1;
+}
+#board .ground {
+    z-index: 0;
+}
+/* method 3: z-index: -1; does not work here because it places it behind the board! */
 
 .hardcoded2 {
     left: 20%;
@@ -196,7 +299,7 @@ body {
 
 .hardcoded2 img {
     width: 100%;
-    height: auto; 
+    height: auto;
     object-fit: contain;
     position: absolute;
     bottom: 0px;

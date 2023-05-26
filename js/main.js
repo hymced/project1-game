@@ -31,7 +31,7 @@ class Game {
         this.settings.spawnDelay = 2000
         this.settings.speedFactorWalk = 0.25
         this.settings.speedFactorFall = 1.5
-        this.settings.scoreInMin = 8 // 80 %
+        this.settings.scoreInMin = 12 // 60 %
         this.settings.disableDebugMode = true
 
     }
@@ -77,13 +77,21 @@ class Game {
         if (this.settings.disableDebugMode === true) this.addDomElementDisableDebugMode()
         this.boardDomElement = document.getElementById("board")
         // this.player = new Player()
-        this.floorsArr.push(this.createGround())
+        // REMINDER: createGround(bottom, left, height, width)
+        // this.floorsArr.push(this.createGround() // uses default values (0, 20, 5, 50)
+        this.floorsArr.push(this.createGround(0, 30, 5, 30))
         this.exit = new Exit()
-        this.floorsArr.push(this.createFloor())
-        this.floorsArr.push(this.createFloor(30, 10, 1, 60))
-        this.floorsArr.push(...this.createFloorMultiLayers(70, 40, 1, 40, 2))
-        this.floorsArr.push(...this.createFloorMultiLayers(70, 40, 1, 40, -2))
-        this.floorsArr.push(this.createRock())
+        // this.floorsArr.push(this.createFloor()) // uses default values (50, 40, 1, 50)
+        // REMINDER: createFloor(bottom, left, height, width)
+        this.floorsArr.push(this.createFloor(70, 30, 1, 40))
+        this.floorsArr.push(this.createFloor(55, 10, 1, 22))
+        // REMINDER: createFloorMultiLayers(bottom, left, height, width, numberLayers)
+        this.floorsArr.push(...this.createFloorMultiLayers(40, 22, 1, 40, 2))
+        this.floorsArr.push(...this.createFloorMultiLayers(40, 22, 1, 40, -2))
+        // this.floorsArr.push(this.createRock()) // uses default values (51, 45, 5, 5)
+        // REMINDER: createRock(bottom, left, height, width)
+        this.floorsArr.push(this.createRock(56, 10, 5, 4))
+        this.floorsArr.push(this.createRock(56, 28, 5, 4))
         this.attachEventListeners()
 
         // 
@@ -386,8 +394,8 @@ class Game {
     // }
     */
 
-    createGround() {
-        const ground = new Ground()
+    createGround(bottom, left, height, width) {
+        const ground = new Ground(bottom, left, height, width)
         return ground
     }
 
@@ -443,8 +451,8 @@ class Game {
         return floors
     }
 
-    createRock() {
-        const rock = new Rock()
+    createRock(bottom, left, height, width) {
+        const rock = new Rock(bottom, left, height, width)
         return rock
     }
 
@@ -672,7 +680,7 @@ class Floor {
 /**********/
 
 class Ground extends Floor {
-    constructor(bottom, left, height, width) {
+    constructor(bottom = 0, left = 20, height = 5, width = 50) {
         super()
 
         /***********************/
@@ -680,10 +688,10 @@ class Ground extends Floor {
         /***********************/
 
         // OVERRIDES
-        this.bottom = 0
-        this.left = 10
-        this.height = 5
-        this.width = 50
+        this.bottom = bottom
+        this.left = left
+        this.height = height
+        this.width = width
 
         /*****************/
         /* Ground > init */
@@ -706,7 +714,7 @@ class Ground extends Floor {
 /********/
 
 class Rock extends Floor {
-    constructor() {
+    constructor(bottom = 51, left = 45, height = 5, width = 5) {
         super()
 
         /*********************/
@@ -714,10 +722,10 @@ class Rock extends Floor {
         /*********************/
 
         // OVERRIDES
-        this.bottom = 51
-        this.left = 45
-        this.height = 5
-        this.width = 5
+        this.bottom = bottom
+        this.left = left
+        this.height = height
+        this.width = width
 
         /***************/
         /* Rock > init */
@@ -779,6 +787,9 @@ class Exit {
         exitDomElement.style.boxSizing = "border-box" 
         // this simplify the calculation of the center of the exit (border width is included in height/width sizing dimensions)
         // default box-sizing: content-box;
+
+        const urlImage = "./images/in-out/exit.gif"
+        exitDomElement.innerHTML = `<img src="${urlImage}" alt="lemming-exit-anim">`;
 
         const boardDomElement = document.getElementById("board")
 
