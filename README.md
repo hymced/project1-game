@@ -65,7 +65,7 @@ Pssst...! You have all the time in the world, the game will finish only when the
 &nbsp;
 
 ---
-##Notes
+## Notes
 
 Lemmings gifs colors
 - Green #00FF00
