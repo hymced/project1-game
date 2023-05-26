@@ -30,102 +30,18 @@ body {
 .walk {
     background-color: rgb(0, 200, 0);
     position: absolute;
-
-    /* 
-    METHOD 1 to have the image using all the space of the div parent container of the img and keeping aspect ratio
-    background-image: url("../images/lemming gifs v1/lemming-walk-anim.gif");
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    */
-
-    /*
-    METHOD 3 not ideal... works to fit image in a vertical rectangle, but not in a horizontal rectangle
-    */
-    /*
-    display: flex;
-    justify-content: center;
-    / * align-items: center; * /
-    align-items: flex-end;
-    */
-
-    /*
-    METHOD 4 ok but won't make the image grow if smaller than container
-    */
-    /* 
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    */
-
 }
 .walk img {
-    
-    /*
-    METHOD 0, need to know the greatest dim of the image, works in a vertical rectangle
-    */
-    /*
-    width: 100%;
-    height: auto;
-    */
-
-    /* 
-    METHOD 2 to have the image using all the space of the div parent container of the img and keeping aspect ratio
-    https://stackoverflow.com/questions/34247337/object-fit-not-affecting-images/34247563#34247563
-    */
-    /* 
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    */
     width: 100%;
     height: auto; 
     object-fit: contain;
     position: absolute;
     bottom: 0px;
-
-    /*
-    METHOD 3 not ideal... works to fit image in a vertical rectangle, but not in a horizontal rectangle
-    */
-    /* flex: 1 0 auto; */
-    /* shorthand for flex-grow (flex-shrink (flex-basis)) */
-
-    /*
-    METHOD 4 ok but won't make the image grow if smaller than container
-    */
-    /*
-    max-width: 100%;
-    max-height: 100%;
-    */
-
 }
 .walk img.flip {
     transform: scaleX(-1);
     -webkit-transform : scaleX(-1);
-    /* to target older Chrome versions and Firefox that are based on WebKit rendering engine (-webkit is a vendor prefix for css properties, used to provide support for features that were experimental or non-standard in specific browsers during the experimental or early stages of implementation) */
-    /* buggy, there is 1 pixel offset up... */
 }
-
-/* .hardcoded {
-    left: 0%;
-    / * width: 2%; * /
-    / * 
-    1080 = 2*2*2*5*27 ; 1/2/2/2/5 = 0.025 ; min precise %
-    2% * 1080 = 21.6
-    but getBoundingClientRect() returns 21.59375
-    and clientWidth returns 22
-    and window.getComputedStyle() returns 21.5938px
-    (chatGPT says because of browser subpixel rendering...)
-    * /
-
-    width: 60vw; 
-    height: 40vw;
-    background-color: red;
-    / * 
-    if using a red background color, the bottom of the image (which is white) may seem to go slightly beyond the bottom of the red area, but its a hardware limitation, red lights being higher in a pixel! this cannot be seen use blue or green!
-    * /
-    position: absolute
-} */
 
 .fall {
     background-color: rgb(200, 200, 0);
@@ -194,10 +110,6 @@ body {
     position: absolute;
 }
 .umbrella2 img {
-    /* width: 100%;  */
-    /* fix inconsistent lemming sizings in pictures manually: ratio lemming body width = 40px / 44px = 0.909090909 */
-    /* width: 90.9%; */
-    /* visually better: */
     width: 80%;
     height: auto;
     object-fit: contain;
@@ -234,7 +146,7 @@ body {
 
 #hatch {
     top: 10%;
-    left: 47.5%; /* aligned with lemmings: Lemming.left - Lemming.width/2 */
+    left: 47.5%;
     height: 5%;
     width: 5%;
 
@@ -303,21 +215,12 @@ body {
     object-fit: contain;
 }
 
-/* place the ground below the ground field part */
-/* method 1: place ground above everything else in stacking context (board) */
-/*
-.field#ground {
-    z-index: 1;
-}
-*/
-/* method 2: increase the default stacking order of divs in stack context, except the ground field part */
 #board div {
     z-index: 1;
 }
 #board .ground {
     z-index: 0;
 }
-/* method 3: z-index: -1; does not work here because it places it behind the board! */
 
 .hardcoded2 {
     left: 20%;

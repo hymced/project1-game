@@ -116,8 +116,6 @@ var g = 1
 
 [playthrought (DOS)](https://www.youtube.com/watch?v=xIuxB1oR2WQ )
 
-[jslems web clone](http://funhtml5games.com/jslems/lemms.php)
-
 https://foxyofjungle.itch.io/lemmings-but-1-object  
 https://github.com/FoxyOfJungle/Lemmings_But_1_Obj  
 
