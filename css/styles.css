@@ -1,4 +1,8 @@
-body {
+* {
+    user-select: none; /* disable selection */
+}
+
+ody {
     margin: 0;
     padding: 0;
 }
